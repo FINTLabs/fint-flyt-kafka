@@ -1,32 +1,42 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.3'
+    id 'org.springframework.boot' version '2.6.4' apply false
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'groovy'
+    id 'maven-publish'
+    id 'java-library'
+
 }
 
 group = 'no.fintlabs'
-version = '0.0.1-SNAPSHOT'
+
 sourceCompatibility = '17'
+targetCompatibility = '17'
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
     }
-}
-
-jar {
-    enabled = false
+    repositories {
+        mavenLocal()
+    }
 }
 
 repositories {
-    mavenCentral()
-    repositories {
-        maven {
-            url "https://repo.fintlabs.no/releases"
-        }
-    }
     mavenLocal()
+    maven {
+        url "https://repo.fintlabs.no/releases"
+    }
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom SpringBootPlugin.BOM_COORDINATES
+    }
 }
 
 dependencies {
