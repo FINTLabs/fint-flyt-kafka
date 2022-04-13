@@ -17,12 +17,12 @@ import org.springframework.stereotype.Service;
 import java.util.function.Function;
 
 @Service
-public class FlytRequestConsumerFactory extends RequestConsumerFactoryService {
+public class FlytRequestConsumerFactoryService extends RequestConsumerFactoryService {
 
     private final InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper;
     private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
 
-    public FlytRequestConsumerFactory(
+    public FlytRequestConsumerFactoryService(
             ListenerContainerFactoryService fintListenerContainerFactoryService,
             FintTemplateFactory fintTemplateFactory,
             RequestTopicMappingService requestTopicMappingService,

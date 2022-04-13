@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 import java.util.function.Consumer;
 
 @Service
-public class FlytErrorEventConsumerFactory extends ErrorEventConsumerFactoryService {
+public class FlytErrorEventConsumerFactoryService extends ErrorEventConsumerFactoryService {
 
     private final InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper;
 
-    public FlytErrorEventConsumerFactory(
+    public FlytErrorEventConsumerFactoryService(
             ListenerContainerFactoryService listenerContainerFactoryService,
             ErrorEventTopicMappingService errorEventTopicMappingService,
             InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper

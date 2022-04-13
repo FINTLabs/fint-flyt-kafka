@@ -1,12 +1,12 @@
 package no.fintlabs.flyt.kafka
 
-import no.fintlabs.flyt.kafka.entity.FlytEntityConsumerFactory
+import no.fintlabs.flyt.kafka.entity.FlytEntityConsumerFactoryService
 import no.fintlabs.flyt.kafka.entity.FlytEntityProducerFactory
-import no.fintlabs.flyt.kafka.event.FlytEventConsumerFactory
+import no.fintlabs.flyt.kafka.event.FlytEventConsumerFactoryService
 import no.fintlabs.flyt.kafka.event.FlytEventProducerFactory
-import no.fintlabs.flyt.kafka.event.error.FlytErrorEventConsumerFactory
+import no.fintlabs.flyt.kafka.event.error.FlytErrorEventConsumerFactoryService
 import no.fintlabs.flyt.kafka.event.error.FlytErrorEventProducer
-import no.fintlabs.flyt.kafka.requestreply.FlytRequestConsumerFactory
+import no.fintlabs.flyt.kafka.requestreply.FlytRequestConsumerFactoryService
 import no.fintlabs.flyt.kafka.requestreply.FlytRequestProducerFactory
 import no.fintlabs.kafka.common.ListenerBeanRegistrationService
 import no.fintlabs.kafka.entity.EntityProducerRecord
@@ -39,22 +39,22 @@ class ProducerConsumerIntegrationSpec extends Specification {
     @Autowired
     FlytEventProducerFactory eventProducerFactory
     @Autowired
-    FlytEventConsumerFactory eventConsumerFactory
+    FlytEventConsumerFactoryService eventConsumerFactory
 
     @Autowired
     FlytErrorEventProducer errorEventProducer
     @Autowired
-    FlytErrorEventConsumerFactory errorEventConsumerFactory
+    FlytErrorEventConsumerFactoryService errorEventConsumerFactory
 
     @Autowired
     FlytEntityProducerFactory entityProducerFactory
     @Autowired
-    FlytEntityConsumerFactory entityConsumerFactory
+    FlytEntityConsumerFactoryService entityConsumerFactory
 
     @Autowired
     FlytRequestProducerFactory requestProducerFactory
     @Autowired
-    FlytRequestConsumerFactory requestConsumerFactory
+    FlytRequestConsumerFactoryService requestConsumerFactory
 
     @Autowired
     ListenerBeanRegistrationService fintListenerBeanRegistrationService
