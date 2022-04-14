@@ -23,7 +23,7 @@ public class InstanceFlowRequestProducerFactory {
         this.instanceFlowConsumerRecordMapper = instanceFlowConsumerRecordMapper;
     }
 
-    public <V, R> InstanceFlowRequestProducer<V, R> createInstanceFlowProducer(
+    public <V, R> InstanceFlowRequestProducer<V, R> createProducer(
             ReplyTopicNameParameters replyTopicNameParameters,
             Class<V> requestValueClass,
             Class<R> replyValueClass

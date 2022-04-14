@@ -103,8 +103,8 @@ class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
         given:
         CountDownLatch eventCDL = new CountDownLatch(1)
         ArrayList<InstanceFlowConsumerRecord<TestObject>> consumedEvents = new ArrayList<>()
-        def eventProducer = eventProducerFactory.createInstanceFlowProducer(TestObject.class)
-        def eventConsumer = eventConsumerFactory.createInstanceFlowFactory(
+        def eventProducer = eventProducerFactory.createProducer(TestObject.class)
+        def eventConsumer = eventConsumerFactory.createFactory(
                 TestObject.class,
                 (consumerRecord) -> {
                     consumedEvents.add(consumerRecord)
@@ -141,7 +141,7 @@ class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
         given:
         CountDownLatch eventCDL = new CountDownLatch(1)
         ArrayList<InstanceFlowConsumerRecord<ErrorCollection>> consumedEvents = new ArrayList<>()
-        def eventConsumer = errorEventConsumerFactory.createInstanceFlowFactory(
+        def eventConsumer = errorEventConsumerFactory.createFactory(
                 (consumerRecord) -> {
                     consumedEvents.add(consumerRecord)
                     eventCDL.countDown()
@@ -191,8 +191,8 @@ class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
         given:
         CountDownLatch entityCDL = new CountDownLatch(1)
         ArrayList<InstanceFlowConsumerRecord<String>> consumedEntities = new ArrayList<>()
-        def entityProducer = entityProducerFactory.createInstanceFlowProducer(String.class)
-        def entityConsumer = entityConsumerFactory.createInstanceFlowFactory(
+        def entityProducer = entityProducerFactory.createProducer(String.class)
+        def entityConsumer = entityConsumerFactory.createFactory(
                 String.class,
                 (consumerRecord) -> {
                     consumedEntities.add(consumerRecord)
@@ -225,7 +225,7 @@ class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
 
     def 'request reply'() {
         given:
-        def requestProducer = requestProducerFactory.createInstanceFlowProducer(
+        def requestProducer = requestProducerFactory.createProducer(
                 ReplyTopicNameParameters.builder()
                         .applicationId("application")
                         .resource("resource")
@@ -234,7 +234,7 @@ class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
                 Integer.class
         )
 
-        def requestConsumer = requestConsumerFactory.createInstanceFlowFactory(
+        def requestConsumer = requestConsumerFactory.createFactory(
                 String.class,
                 Integer.class,
                 (consumerRecord) -> InstanceFlowReplyProducerRecord.builder()

@@ -26,7 +26,7 @@ public class InstanceFlowErrorEventConsumerFactoryService {
         this.instanceFlowConsumerRecordMapper = instanceFlowConsumerRecordMapper;
     }
 
-    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createInstanceFlowFactory(
+    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createFactory(
             Consumer<InstanceFlowConsumerRecord<ErrorCollection>> consumer,
             CommonErrorHandler errorHandler,
             boolean resetOffsetOnAssignment

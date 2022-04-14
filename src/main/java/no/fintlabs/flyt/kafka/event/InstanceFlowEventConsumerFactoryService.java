@@ -26,7 +26,7 @@ public class InstanceFlowEventConsumerFactoryService {
     }
 
 
-    public <T> ListenerContainerFactory<T, EventTopicNameParameters, EventTopicNamePatternParameters> createInstanceFlowFactory(
+    public <T> ListenerContainerFactory<T, EventTopicNameParameters, EventTopicNamePatternParameters> createFactory(
             Class<T> valueClass,
             Consumer<InstanceFlowConsumerRecord<T>> consumer,
             CommonErrorHandler errorHandler,

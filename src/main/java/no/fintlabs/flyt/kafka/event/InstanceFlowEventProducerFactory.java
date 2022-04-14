@@ -15,7 +15,7 @@ public class InstanceFlowEventProducerFactory {
         this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
     }
 
-    public <T> InstanceFlowEventProducer<T> createInstanceFlowProducer(Class<T> valueClass) {
+    public <T> InstanceFlowEventProducer<T> createProducer(Class<T> valueClass) {
         return new InstanceFlowEventProducer<>(
                 eventProducerFactory.createProducer(valueClass),
                 instanceFlowHeadersMapper

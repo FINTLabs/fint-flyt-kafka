@@ -30,7 +30,7 @@ public class InstanceFlowRequestConsumerFactoryService {
         this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
     }
 
-    public <V, R> ListenerContainerFactory<V, RequestTopicNameParameters, RequestTopicNamePatternParameters> createInstanceFlowFactory(
+    public <V, R> ListenerContainerFactory<V, RequestTopicNameParameters, RequestTopicNamePatternParameters> createFactory(
             Class<V> valueClass,
             Class<R> replyValueClass,
             Function<InstanceFlowConsumerRecord<V>, InstanceFlowReplyProducerRecord<R>> replyFunction,

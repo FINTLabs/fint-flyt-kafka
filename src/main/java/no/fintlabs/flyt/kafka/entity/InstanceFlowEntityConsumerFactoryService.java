@@ -25,7 +25,7 @@ public class InstanceFlowEntityConsumerFactoryService {
         this.instanceFlowConsumerRecordMapper = instanceFlowConsumerRecordMapper;
     }
 
-    public <T> ListenerContainerFactory<T, EntityTopicNameParameters, EntityTopicNamePatternParameters> createInstanceFlowFactory(
+    public <T> ListenerContainerFactory<T, EntityTopicNameParameters, EntityTopicNamePatternParameters> createFactory(
             Class<T> valueClass,
             Consumer<InstanceFlowConsumerRecord<T>> consumer,
             CommonErrorHandler errorHandler
