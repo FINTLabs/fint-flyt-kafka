@@ -2,27 +2,23 @@ package no.fintlabs.flyt.kafka.requestreply;
 
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecordMapper;
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
-import no.fintlabs.kafka.common.FintTemplateFactory;
 import no.fintlabs.kafka.requestreply.RequestProducerFactory;
-import no.fintlabs.kafka.requestreply.topic.ReplyTopicMappingService;
 import no.fintlabs.kafka.requestreply.topic.ReplyTopicNameParameters;
-import no.fintlabs.kafka.requestreply.topic.RequestTopicMappingService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FlytRequestProducerFactory extends RequestProducerFactory {
+public class InstanceFlowRequestProducerFactory {
 
+    private final RequestProducerFactory requestProducerFactory;
     private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
     private final InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper;
 
-    public FlytRequestProducerFactory(
-            FintTemplateFactory fintTemplateFactory,
-            RequestTopicMappingService requestTopicMappingService,
-            ReplyTopicMappingService replyTopicMappingService,
+    public InstanceFlowRequestProducerFactory(
+            RequestProducerFactory requestProducerFactory,
             InstanceFlowHeadersMapper instanceFlowHeadersMapper,
             InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper
     ) {
-        super(fintTemplateFactory, requestTopicMappingService, replyTopicMappingService);
+        this.requestProducerFactory = requestProducerFactory;
         this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
         this.instanceFlowConsumerRecordMapper = instanceFlowConsumerRecordMapper;
     }
@@ -33,7 +29,7 @@ public class FlytRequestProducerFactory extends RequestProducerFactory {
             Class<R> replyValueClass
     ) {
         return new InstanceFlowRequestProducer<>(
-                createProducer(replyTopicNameParameters, requestValueClass, replyValueClass),
+                requestProducerFactory.createProducer(replyTopicNameParameters, requestValueClass, replyValueClass),
                 instanceFlowHeadersMapper,
                 instanceFlowConsumerRecordMapper
         );

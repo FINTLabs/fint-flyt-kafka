@@ -1,17 +1,17 @@
 package no.fintlabs.flyt.kafka
 
-import no.fintlabs.flyt.kafka.entity.FlytEntityConsumerFactoryService
-import no.fintlabs.flyt.kafka.entity.FlytEntityProducerFactory
+import no.fintlabs.flyt.kafka.entity.InstanceFlowEntityConsumerFactoryService
+import no.fintlabs.flyt.kafka.entity.InstanceFlowEntityProducerFactory
 import no.fintlabs.flyt.kafka.entity.InstanceFlowEntityProducerRecord
-import no.fintlabs.flyt.kafka.event.FlytEventConsumerFactoryService
-import no.fintlabs.flyt.kafka.event.FlytEventProducerFactory
+import no.fintlabs.flyt.kafka.event.InstanceFlowEventConsumerFactoryService
+import no.fintlabs.flyt.kafka.event.InstanceFlowEventProducerFactory
 import no.fintlabs.flyt.kafka.event.InstanceFlowEventProducerRecord
-import no.fintlabs.flyt.kafka.event.error.FlytErrorEventConsumerFactoryService
-import no.fintlabs.flyt.kafka.event.error.FlytErrorEventProducer
+import no.fintlabs.flyt.kafka.event.error.InstanceFlowErrorEventConsumerFactoryService
+import no.fintlabs.flyt.kafka.event.error.InstanceFlowErrorEventProducer
 import no.fintlabs.flyt.kafka.event.error.InstanceFlowErrorEventProducerRecord
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeaders
-import no.fintlabs.flyt.kafka.requestreply.FlytRequestConsumerFactoryService
-import no.fintlabs.flyt.kafka.requestreply.FlytRequestProducerFactory
+import no.fintlabs.flyt.kafka.requestreply.InstanceFlowRequestConsumerFactoryService
+import no.fintlabs.flyt.kafka.requestreply.InstanceFlowRequestProducerFactory
 import no.fintlabs.flyt.kafka.requestreply.InstanceFlowReplyProducerRecord
 import no.fintlabs.flyt.kafka.requestreply.InstanceFlowRequestProducerRecord
 import no.fintlabs.kafka.common.ListenerBeanRegistrationService
@@ -37,24 +37,24 @@ import java.util.concurrent.TimeUnit
 class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
 
     @Autowired
-    FlytEventProducerFactory eventProducerFactory
+    InstanceFlowEventProducerFactory eventProducerFactory
     @Autowired
-    FlytEventConsumerFactoryService eventConsumerFactory
+    InstanceFlowEventConsumerFactoryService eventConsumerFactory
 
     @Autowired
-    FlytErrorEventProducer errorEventProducer
+    InstanceFlowErrorEventProducer errorEventProducer
     @Autowired
-    FlytErrorEventConsumerFactoryService errorEventConsumerFactory
+    InstanceFlowErrorEventConsumerFactoryService errorEventConsumerFactory
 
     @Autowired
-    FlytEntityProducerFactory entityProducerFactory
+    InstanceFlowEntityProducerFactory entityProducerFactory
     @Autowired
-    FlytEntityConsumerFactoryService entityConsumerFactory
+    InstanceFlowEntityConsumerFactoryService entityConsumerFactory
 
     @Autowired
-    FlytRequestProducerFactory requestProducerFactory
+    InstanceFlowRequestProducerFactory requestProducerFactory
     @Autowired
-    FlytRequestConsumerFactoryService requestConsumerFactory
+    InstanceFlowRequestConsumerFactoryService requestConsumerFactory
 
     @Autowired
     ListenerBeanRegistrationService fintListenerBeanRegistrationService

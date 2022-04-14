@@ -1,31 +1,27 @@
 package no.fintlabs.flyt.kafka.event.error;
 
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
-import no.fintlabs.kafka.common.FintTemplateFactory;
 import no.fintlabs.kafka.event.error.ErrorCollection;
 import no.fintlabs.kafka.event.error.ErrorEventProducer;
 import no.fintlabs.kafka.event.error.ErrorEventProducerRecord;
-import no.fintlabs.kafka.event.error.topic.ErrorEventTopicMappingService;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 
 @Service
-public class FlytErrorEventProducer extends ErrorEventProducer {
+public class InstanceFlowErrorEventProducer {
 
+    private final ErrorEventProducer errorEventProducer;
     private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
 
-    public FlytErrorEventProducer(
-            FintTemplateFactory fintTemplateFactory,
-            ErrorEventTopicMappingService errorEventTopicMappingService,
-            InstanceFlowHeadersMapper instanceFlowHeadersMapper
-    ) {
-        super(fintTemplateFactory, errorEventTopicMappingService);
+    public InstanceFlowErrorEventProducer(ErrorEventProducer errorEventProducer, InstanceFlowHeadersMapper instanceFlowHeadersMapper) {
+        this.errorEventProducer = errorEventProducer;
         this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
     }
 
+
     public ListenableFuture<SendResult<String, ErrorCollection>> send(InstanceFlowErrorEventProducerRecord instanceFlowErrorEventProducerRecord) {
-        return send(
+        return errorEventProducer.send(
                 ErrorEventProducerRecord
                         .builder()
                         .topicNameParameters(instanceFlowErrorEventProducerRecord.getTopicNameParameters())

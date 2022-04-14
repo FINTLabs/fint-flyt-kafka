@@ -3,12 +3,9 @@ package no.fintlabs.flyt.kafka.requestreply;
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecord;
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecordMapper;
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
-import no.fintlabs.kafka.common.FintTemplateFactory;
 import no.fintlabs.kafka.common.ListenerContainerFactory;
-import no.fintlabs.kafka.common.ListenerContainerFactoryService;
 import no.fintlabs.kafka.requestreply.ReplyProducerRecord;
 import no.fintlabs.kafka.requestreply.RequestConsumerFactoryService;
-import no.fintlabs.kafka.requestreply.topic.RequestTopicMappingService;
 import no.fintlabs.kafka.requestreply.topic.RequestTopicNameParameters;
 import no.fintlabs.kafka.requestreply.topic.RequestTopicNamePatternParameters;
 import org.springframework.kafka.listener.CommonErrorHandler;
@@ -17,19 +14,18 @@ import org.springframework.stereotype.Service;
 import java.util.function.Function;
 
 @Service
-public class FlytRequestConsumerFactoryService extends RequestConsumerFactoryService {
+public class InstanceFlowRequestConsumerFactoryService {
 
+    private final RequestConsumerFactoryService requestConsumerFactoryService;
     private final InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper;
     private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
 
-    public FlytRequestConsumerFactoryService(
-            ListenerContainerFactoryService fintListenerContainerFactoryService,
-            FintTemplateFactory fintTemplateFactory,
-            RequestTopicMappingService requestTopicMappingService,
+    public InstanceFlowRequestConsumerFactoryService(
+            RequestConsumerFactoryService requestConsumerFactoryService,
             InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper,
             InstanceFlowHeadersMapper instanceFlowHeadersMapper
     ) {
-        super(fintListenerContainerFactoryService, fintTemplateFactory, requestTopicMappingService);
+        this.requestConsumerFactoryService = requestConsumerFactoryService;
         this.instanceFlowConsumerRecordMapper = instanceFlowConsumerRecordMapper;
         this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
     }
@@ -40,7 +36,7 @@ public class FlytRequestConsumerFactoryService extends RequestConsumerFactorySer
             Function<InstanceFlowConsumerRecord<V>, InstanceFlowReplyProducerRecord<R>> replyFunction,
             CommonErrorHandler errorHandler
     ) {
-        return createFactory(
+        return requestConsumerFactoryService.createFactory(
                 valueClass,
                 replyValueClass,
                 consumerRecord -> {
