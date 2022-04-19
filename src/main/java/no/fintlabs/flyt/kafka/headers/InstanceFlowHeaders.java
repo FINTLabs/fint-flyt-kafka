@@ -26,8 +26,8 @@ public class InstanceFlowHeaders {
     @NonNull
     private String correlationId;
 
-// TODO: 08/04/2022 Remove integrationId and instanceId? If we keep these, we need a service for storing integration ids
-//    private String integrationId;
+    private String integrationId;
+
     private String instanceId;
 
     private String configurationId;
@@ -37,4 +37,3 @@ public class InstanceFlowHeaders {
     private String dispatchId;
 
 }
-
