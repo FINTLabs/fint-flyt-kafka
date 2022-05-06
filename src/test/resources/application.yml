@@ -9,5 +9,6 @@ fint:
   kafka:
     topic:
       org-id: no.fintlabs
+      domain-context: flyt
     default-replicas: 1
     application-id: test
