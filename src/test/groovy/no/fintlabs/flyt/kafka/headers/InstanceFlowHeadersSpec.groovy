@@ -8,8 +8,7 @@ class InstanceFlowHeadersSpec extends Specification {
         when:
         def instanceFlowHeaders = InstanceFlowHeaders.builder()
                 .orgId("orgId")
-                .service("service")
-                .sourceApplication("sourceApplication")
+                .sourceApplicationId("sourceApplicationId")
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")
@@ -22,8 +21,7 @@ class InstanceFlowHeadersSpec extends Specification {
         given:
         def instanceFlowHeaders1 = InstanceFlowHeaders.builder()
                 .orgId("orgId")
-                .service("service")
-                .sourceApplication("sourceApplication")
+                .sourceApplicationId("sourceApplicationId")
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")
@@ -37,8 +35,7 @@ class InstanceFlowHeadersSpec extends Specification {
         then:
         instanceFlowHeaders == InstanceFlowHeaders.builder()
                 .orgId("orgId")
-                .service("service")
-                .sourceApplication("sourceApplication")
+                .sourceApplicationId("sourceApplicationId")
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")
@@ -49,8 +46,7 @@ class InstanceFlowHeadersSpec extends Specification {
     def 'should throw error if orgId is missing'() {
         when:
         InstanceFlowHeaders.builder()
-                .service("service")
-                .sourceApplication("sourceApplication")
+                .sourceApplicationId("sourceApplicationId")
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")
@@ -59,24 +55,10 @@ class InstanceFlowHeadersSpec extends Specification {
         thrown NullPointerException
     }
 
-    def 'should throw error if service is missing '() {
+    def 'should throw error if source application id is missing '() {
         when:
         InstanceFlowHeaders.builder()
                 .orgId("orgId")
-                .sourceApplication("sourceApplication")
-                .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
-                .sourceApplicationInstanceId("sourceApplicationInstanceId")
-                .correlationId("correlationId")
-                .build()
-        then:
-        thrown NullPointerException
-    }
-
-    def 'should throw error if source application is missing '() {
-        when:
-        InstanceFlowHeaders.builder()
-                .orgId("orgId")
-                .service("service")
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")
@@ -89,8 +71,7 @@ class InstanceFlowHeadersSpec extends Specification {
         when:
         InstanceFlowHeaders.builder()
                 .orgId("orgId")
-                .service("service")
-                .sourceApplication("sourceApplication")
+                .sourceApplicationId("sourceApplicationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")
                 .build()
@@ -102,8 +83,7 @@ class InstanceFlowHeadersSpec extends Specification {
         when:
         InstanceFlowHeaders.builder()
                 .orgId("orgId")
-                .service("service")
-                .sourceApplication("sourceApplication")
+                .sourceApplicationId("sourceApplicationId")
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .correlationId("correlationId")
                 .build()
@@ -115,8 +95,7 @@ class InstanceFlowHeadersSpec extends Specification {
         when:
         InstanceFlowHeaders.builder()
                 .orgId("orgId")
-                .service("service")
-                .sourceApplication("sourceApplication")
+                .sourceApplicationId("sourceApplicationId")
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .build()

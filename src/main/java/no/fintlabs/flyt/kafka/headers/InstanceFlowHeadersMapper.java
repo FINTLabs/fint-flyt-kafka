@@ -13,7 +13,7 @@ import java.io.IOException;
 @Service
 public class InstanceFlowHeadersMapper {
 
-    private static final String FLYT_HEADERS_KEY = "flyt.headers";
+    private static final String INSTANCE_FLOW_HEADERS_KEY = "flyt.instance-flow-headers";
 
     private final ObjectMapper objectMapper;
 
@@ -26,7 +26,7 @@ public class InstanceFlowHeadersMapper {
             throw new NoInstanceFlowHeadersException();
         }
         try {
-            return new RecordHeader(FLYT_HEADERS_KEY, objectMapper.writeValueAsBytes(instanceFlowHeaders));
+            return new RecordHeader(INSTANCE_FLOW_HEADERS_KEY, objectMapper.writeValueAsBytes(instanceFlowHeaders));
         } catch (JsonProcessingException e) {
             throw new CouldNotWriteInstanceFlowHeadersException(instanceFlowHeaders);
         }
@@ -37,7 +37,7 @@ public class InstanceFlowHeadersMapper {
     }
 
     public InstanceFlowHeaders getInstanceFlowHeaders(Headers headers) {
-        Header header = headers.lastHeader(FLYT_HEADERS_KEY);
+        Header header = headers.lastHeader(INSTANCE_FLOW_HEADERS_KEY);
         if (header == null) {
             throw new NoInstanceFlowHeadersException();
         }

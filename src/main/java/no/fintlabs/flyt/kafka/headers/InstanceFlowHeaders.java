@@ -12,10 +12,7 @@ public class InstanceFlowHeaders {
     private String orgId;
 
     @NonNull
-    private String service;
-
-    @NonNull
-    private String sourceApplication;
+    private String sourceApplicationId;
 
     @NonNull
     private String sourceApplicationIntegrationId;
@@ -32,8 +29,6 @@ public class InstanceFlowHeaders {
 
     private String configurationId;
 
-    private String caseId;
-
-    private String dispatchId;
+    private String archiveCaseId;
 
 }
