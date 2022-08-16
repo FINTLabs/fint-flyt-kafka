@@ -23,8 +23,6 @@ public class InstanceFlowHeaders {
     @NonNull
     private String correlationId;
 
-    private String integrationId;
-
     private String instanceId;
 
     private String configurationId;
