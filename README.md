@@ -1,5 +1,5 @@
 # FINT Flyt Kafka Project
-[![CI](https://github.com/FINTLabs/fint-skjema-kafka/actions/workflows/ci.yaml/badge.svg)](https://github.com/FINTLabs/fint-skjema-kafka/actions/workflows/ci.yaml)
+[![CI](https://github.com/FINTLabs/fint-flyt-kafka/actions/workflows/ci.yaml/badge.svg)](https://github.com/FINTLabs/fint-skjema-kafka/actions/workflows/ci.yaml)
 
 This library expands on the FINT Kafka library (fint-kafka) by configuring application properties and adding an api for producing and consuming kafka messages with instance flow headers. This readme only covers the added functionality. For information on the basic apis and requirements, see https://github.com/FINTLabs/fint-kafka#readme.
 
