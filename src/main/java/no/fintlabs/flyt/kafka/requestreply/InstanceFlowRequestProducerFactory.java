@@ -2,6 +2,7 @@ package no.fintlabs.flyt.kafka.requestreply;
 
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecordMapper;
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
+import no.fintlabs.kafka.requestreply.RequestProducerConfiguration;
 import no.fintlabs.kafka.requestreply.RequestProducerFactory;
 import no.fintlabs.kafka.requestreply.topic.ReplyTopicNameParameters;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,24 @@ public class InstanceFlowRequestProducerFactory {
     ) {
         return new InstanceFlowRequestProducer<>(
                 requestProducerFactory.createProducer(replyTopicNameParameters, requestValueClass, replyValueClass),
+                instanceFlowHeadersMapper,
+                instanceFlowConsumerRecordMapper
+        );
+    }
+
+    public <V, R> InstanceFlowRequestProducer<V, R> createProducer(
+            ReplyTopicNameParameters replyTopicNameParameters,
+            Class<V> requestValueClass,
+            Class<R> replyValueClass,
+            RequestProducerConfiguration requestProducerConfiguration
+    ) {
+        return new InstanceFlowRequestProducer<>(
+                requestProducerFactory.createProducer(
+                        replyTopicNameParameters,
+                        requestValueClass,
+                        replyValueClass,
+                        requestProducerConfiguration
+                ),
                 instanceFlowHeadersMapper,
                 instanceFlowConsumerRecordMapper
         );
