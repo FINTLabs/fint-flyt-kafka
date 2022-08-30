@@ -1,14 +1,15 @@
 package no.fintlabs.flyt.kafka;
 
+import lombok.NonNull;
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeaders;
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.kafka.listener.CommonLoggingErrorHandler;
 import org.springframework.kafka.listener.MessageListenerContainer;
 
 
-public abstract class InstanceFlowErrorHandler extends DefaultErrorHandler {
+public abstract class InstanceFlowErrorHandler extends CommonLoggingErrorHandler {
 
     private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
 
@@ -17,18 +18,24 @@ public abstract class InstanceFlowErrorHandler extends DefaultErrorHandler {
     }
 
     @Override
-    public void handleRecord(Exception thrownException, ConsumerRecord<?, ?> record, Consumer<?, ?> consumer, MessageListenerContainer container) {
-        handleInstanceFlowRecord(
-                thrownException,
-                instanceFlowHeadersMapper.getInstanceFlowHeaders(record.headers()),
+    public void handleRecord(
+            @NonNull Exception thrownException,
+            @NonNull ConsumerRecord<?, ?> record,
+            @NonNull Consumer<?, ?> consumer,
+            @NonNull MessageListenerContainer container
+    ) {
+        super.handleRecord(thrownException, record, consumer, container);
+        this.handleInstanceFlowRecord(
+                thrownException.getCause(),
+                this.instanceFlowHeadersMapper.getInstanceFlowHeaders(record.headers()),
                 record
         );
     }
 
     public abstract void handleInstanceFlowRecord(
-            Exception thrownException,
+            Throwable cause,
             InstanceFlowHeaders instanceFlowHeaders,
-            ConsumerRecord<?, ?> record
+            ConsumerRecord<?, ?> consumerRecord
     );
 
 }
