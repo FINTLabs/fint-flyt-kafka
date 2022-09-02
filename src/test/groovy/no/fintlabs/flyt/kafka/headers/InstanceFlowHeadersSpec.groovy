@@ -67,30 +67,6 @@ class InstanceFlowHeadersSpec extends Specification {
         thrown NullPointerException
     }
 
-    def 'should throw error if source application integration id is missing '() {
-        when:
-        InstanceFlowHeaders.builder()
-                .orgId("orgId")
-                .sourceApplicationId("sourceApplicationId")
-                .sourceApplicationInstanceId("sourceApplicationInstanceId")
-                .correlationId("correlationId")
-                .build()
-        then:
-        thrown NullPointerException
-    }
-
-    def 'should throw error if source application instance id is missing '() {
-        when:
-        InstanceFlowHeaders.builder()
-                .orgId("orgId")
-                .sourceApplicationId("sourceApplicationId")
-                .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
-                .correlationId("correlationId")
-                .build()
-        then:
-        thrown NullPointerException
-    }
-
     def 'should throw error if correlation id is missing '() {
         when:
         InstanceFlowHeaders.builder()

@@ -14,10 +14,8 @@ public class InstanceFlowHeaders {
     @NonNull
     private String sourceApplicationId;
 
-    @NonNull
     private String sourceApplicationIntegrationId;
 
-    @NonNull
     private String sourceApplicationInstanceId;
 
     @NonNull
