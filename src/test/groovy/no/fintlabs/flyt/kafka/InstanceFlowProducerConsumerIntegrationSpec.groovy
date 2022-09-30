@@ -270,8 +270,7 @@ class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
 
     private createInstanceFlowHeaders() {
         return InstanceFlowHeaders.builder()
-                .orgId("orgId")
-                .sourceApplicationId("sourceApplicationId")
+                .sourceApplicationId(1)
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")

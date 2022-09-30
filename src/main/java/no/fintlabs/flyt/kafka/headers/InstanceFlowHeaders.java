@@ -9,22 +9,16 @@ import lombok.*;
 public class InstanceFlowHeaders {
 
     @NonNull
-    private String orgId;
-
-    @NonNull
-    private String sourceApplicationId;
-
+    private Long sourceApplicationId;
     private String sourceApplicationIntegrationId;
-
     private String sourceApplicationInstanceId;
 
     @NonNull
     private String correlationId;
+    private Long integrationId;
+    private Long instanceId;
+    private Long configurationId;
 
-    private String instanceId;
-
-    private String configurationId;
-
-    private String archiveCaseId;
+    private String archiveInstanceId;
 
 }
