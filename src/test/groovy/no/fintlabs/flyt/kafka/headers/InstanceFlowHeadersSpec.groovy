@@ -7,8 +7,7 @@ class InstanceFlowHeadersSpec extends Specification {
     def 'should create instance flow headers'() {
         when:
         def instanceFlowHeaders = InstanceFlowHeaders.builder()
-                .orgId("orgId")
-                .sourceApplicationId("sourceApplicationId")
+                .sourceApplicationId(1)
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")
@@ -20,8 +19,7 @@ class InstanceFlowHeadersSpec extends Specification {
     def 'should create instance flow headers from existing instance flow headers'() {
         given:
         def instanceFlowHeaders1 = InstanceFlowHeaders.builder()
-                .orgId("orgId")
-                .sourceApplicationId("sourceApplicationId")
+                .sourceApplicationId(1)
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")
@@ -29,36 +27,22 @@ class InstanceFlowHeadersSpec extends Specification {
 
         when:
         def instanceFlowHeaders = instanceFlowHeaders1.toBuilder()
-                .instanceId("instanceId")
+                .instanceId(1)
                 .build()
 
         then:
         instanceFlowHeaders == InstanceFlowHeaders.builder()
-                .orgId("orgId")
-                .sourceApplicationId("sourceApplicationId")
+                .sourceApplicationId(1)
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")
-                .instanceId("instanceId")
+                .instanceId(1)
                 .build()
-    }
-
-    def 'should throw error if orgId is missing'() {
-        when:
-        InstanceFlowHeaders.builder()
-                .sourceApplicationId("sourceApplicationId")
-                .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
-                .sourceApplicationInstanceId("sourceApplicationInstanceId")
-                .correlationId("correlationId")
-                .build()
-        then:
-        thrown NullPointerException
     }
 
     def 'should throw error if source application id is missing '() {
         when:
         InstanceFlowHeaders.builder()
-                .orgId("orgId")
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .correlationId("correlationId")
@@ -70,8 +54,7 @@ class InstanceFlowHeadersSpec extends Specification {
     def 'should throw error if correlation id is missing '() {
         when:
         InstanceFlowHeaders.builder()
-                .orgId("orgId")
-                .sourceApplicationId("sourceApplicationId")
+                .sourceApplicationId(1)
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
                 .build()
