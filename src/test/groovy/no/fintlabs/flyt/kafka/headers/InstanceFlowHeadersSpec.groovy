@@ -10,7 +10,7 @@ class InstanceFlowHeadersSpec extends Specification {
                 .sourceApplicationId(1)
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
-                .correlationId("correlationId")
+                .correlationId(UUID.fromString("2ee6f95e-44c3-11ed-b878-0242ac120002"))
                 .build()
         then:
         instanceFlowHeaders
@@ -22,7 +22,7 @@ class InstanceFlowHeadersSpec extends Specification {
                 .sourceApplicationId(1)
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
-                .correlationId("correlationId")
+                .correlationId(UUID.fromString("2ee6f95e-44c3-11ed-b878-0242ac120002"))
                 .build()
 
         when:
@@ -35,7 +35,7 @@ class InstanceFlowHeadersSpec extends Specification {
                 .sourceApplicationId(1)
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
-                .correlationId("correlationId")
+                .correlationId(UUID.fromString("2ee6f95e-44c3-11ed-b878-0242ac120002"))
                 .instanceId(1)
                 .build()
     }
@@ -45,7 +45,7 @@ class InstanceFlowHeadersSpec extends Specification {
         InstanceFlowHeaders.builder()
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
-                .correlationId("correlationId")
+                .correlationId(UUID.fromString("2ee6f95e-44c3-11ed-b878-0242ac120002"))
                 .build()
         then:
         thrown NullPointerException

@@ -2,6 +2,8 @@ package no.fintlabs.flyt.kafka.headers;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -14,7 +16,7 @@ public class InstanceFlowHeaders {
     private String sourceApplicationInstanceId;
 
     @NonNull
-    private String correlationId;
+    private UUID correlationId;
     private Long integrationId;
     private Long instanceId;
     private Long configurationId;
