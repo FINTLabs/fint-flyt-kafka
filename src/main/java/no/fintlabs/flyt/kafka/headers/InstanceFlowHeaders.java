@@ -1,12 +1,13 @@
 package no.fintlabs.flyt.kafka.headers;
 
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.UUID;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+@Getter
+@EqualsAndHashCode
+@Jacksonized
 @Builder(toBuilder = true)
 public class InstanceFlowHeaders {
 

@@ -2,10 +2,14 @@ package no.fintlabs.flyt.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.extern.jackson.Jacksonized;
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeaders;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-@Data
+@Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 public class InstanceFlowConsumerRecord<T> {
     private final InstanceFlowHeaders instanceFlowHeaders;
