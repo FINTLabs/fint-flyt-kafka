@@ -8,6 +8,7 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 @Jacksonized
+@ToString
 @Builder(toBuilder = true)
 public class InstanceFlowHeaders {
 
