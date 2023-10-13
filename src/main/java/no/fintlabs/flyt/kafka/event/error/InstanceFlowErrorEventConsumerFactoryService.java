@@ -4,12 +4,13 @@ import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecord;
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecordMapper;
 import no.fintlabs.kafka.common.ListenerContainerFactory;
 import no.fintlabs.kafka.event.error.ErrorCollection;
+import no.fintlabs.kafka.event.error.ErrorEventConsumerConfiguration;
 import no.fintlabs.kafka.event.error.ErrorEventConsumerFactoryService;
 import no.fintlabs.kafka.event.error.topic.ErrorEventTopicNameParameters;
 import no.fintlabs.kafka.event.error.topic.ErrorEventTopicNamePatternParameters;
-import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @Service
@@ -26,15 +27,37 @@ public class InstanceFlowErrorEventConsumerFactoryService {
         this.instanceFlowConsumerRecordMapper = instanceFlowConsumerRecordMapper;
     }
 
-    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createFactory(
-            Consumer<InstanceFlowConsumerRecord<ErrorCollection>> consumer,
-            CommonErrorHandler errorHandler,
-            boolean resetOffsetOnAssignment
+    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createRecordFactory(
+            Consumer<InstanceFlowConsumerRecord<ErrorCollection>> consumer
     ) {
-        return errorEventConsumerFactoryService.createFactory(
+        return createRecordFactory(consumer, ErrorEventConsumerConfiguration.empty());
+    }
+
+    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createRecordFactory(
+            Consumer<InstanceFlowConsumerRecord<ErrorCollection>> consumer,
+            ErrorEventConsumerConfiguration errorEventConsumerConfiguration
+    ) {
+        return errorEventConsumerFactoryService.createRecordConsumerFactory(
                 consumerRecord -> consumer.accept(instanceFlowConsumerRecordMapper.toFlytConsumerRecord(consumerRecord)),
-                errorHandler,
-                resetOffsetOnAssignment
+                errorEventConsumerConfiguration
+        );
+    }
+
+    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createBatchFactory(
+            Consumer<List<InstanceFlowConsumerRecord<ErrorCollection>>> consumer
+
+    ) {
+        return createBatchFactory(consumer, ErrorEventConsumerConfiguration.empty());
+    }
+
+    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createBatchFactory(
+            Consumer<List<InstanceFlowConsumerRecord<ErrorCollection>>> consumer,
+            ErrorEventConsumerConfiguration errorEventConsumerConfiguration
+
+    ) {
+        return errorEventConsumerFactoryService.createBatchConsumerFactory(
+                consumerRecords -> consumer.accept(instanceFlowConsumerRecordMapper.toFlytConsumerRecords(consumerRecords)),
+                errorEventConsumerConfiguration
         );
     }
 
