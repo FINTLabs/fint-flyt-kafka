@@ -16,7 +16,6 @@ import no.fintlabs.flyt.kafka.requestreply.InstanceFlowRequestProducerFactory
 import no.fintlabs.flyt.kafka.requestreply.InstanceFlowRequestProducerRecord
 import no.fintlabs.kafka.common.ListenerBeanRegistrationService
 import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters
-import no.fintlabs.kafka.event.error.Error
 import no.fintlabs.kafka.event.error.ErrorCollection
 import no.fintlabs.kafka.event.error.topic.ErrorEventTopicNameParameters
 import no.fintlabs.kafka.event.topic.EventTopicNameParameters
@@ -106,14 +105,12 @@ class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
         CountDownLatch eventCDL = new CountDownLatch(1)
         ArrayList<InstanceFlowConsumerRecord<TestObject>> consumedEvents = new ArrayList<>()
         def eventProducer = eventProducerFactory.createProducer(TestObject.class)
-        def eventConsumer = eventConsumerFactory.createFactory(
+        def eventConsumer = eventConsumerFactory.createRecordFactory(
                 TestObject.class,
                 (consumerRecord) -> {
                     consumedEvents.add(consumerRecord)
                     eventCDL.countDown()
-                },
-                null,
-                false
+                }
         ).createContainer(EventTopicNameParameters.builder().eventName("event").build())
         fintListenerBeanRegistrationService.registerBean(eventConsumer)
 
@@ -143,13 +140,11 @@ class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
         given:
         CountDownLatch eventCDL = new CountDownLatch(1)
         ArrayList<InstanceFlowConsumerRecord<ErrorCollection>> consumedEvents = new ArrayList<>()
-        def eventConsumer = errorEventConsumerFactory.createFactory(
+        def eventConsumer = errorEventConsumerFactory.createRecordFactory(
                 (consumerRecord) -> {
                     consumedEvents.add(consumerRecord)
                     eventCDL.countDown()
-                },
-                null,
-                false
+                }
         ).createContainer(ErrorEventTopicNameParameters.builder().errorEventName("event").build())
         fintListenerBeanRegistrationService.registerBean(eventConsumer)
 
@@ -194,13 +189,12 @@ class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
         CountDownLatch entityCDL = new CountDownLatch(1)
         ArrayList<InstanceFlowConsumerRecord<String>> consumedEntities = new ArrayList<>()
         def entityProducer = entityProducerFactory.createProducer(String.class)
-        def entityConsumer = entityConsumerFactory.createFactory(
+        def entityConsumer = entityConsumerFactory.createRecordFactory(
                 String.class,
                 (consumerRecord) -> {
                     consumedEntities.add(consumerRecord)
                     entityCDL.countDown()
-                },
-                null
+                }
         ).createContainer(EntityTopicNameParameters.builder().resource("resource").build())
         fintListenerBeanRegistrationService.registerBean(entityConsumer)
 
@@ -240,14 +234,13 @@ class InstanceFlowProducerConsumerIntegrationSpec extends Specification {
                         .build()
         )
 
-        def requestConsumer = requestConsumerFactory.createFactory(
+        def requestConsumer = requestConsumerFactory.createRecordFactory(
                 String.class,
                 Integer.class,
                 (consumerRecord) -> InstanceFlowReplyProducerRecord.builder()
                         .instanceFlowHeaders(consumerRecord.instanceFlowHeaders)
                         .value(32)
-                        .build(),
-                null
+                        .build()
         ).createContainer(RequestTopicNameParameters.builder().resource("resource").build())
         fintListenerBeanRegistrationService.registerBean(requestConsumer)
 
