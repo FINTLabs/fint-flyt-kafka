@@ -16,6 +16,7 @@ import no.fintlabs.flyt.kafka.requestreply.InstanceFlowRequestProducerFactory
 import no.fintlabs.flyt.kafka.requestreply.InstanceFlowRequestProducerRecord
 import no.fintlabs.kafka.common.ListenerBeanRegistrationService
 import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters
+import no.fintlabs.kafka.event.error.Error
 import no.fintlabs.kafka.event.error.ErrorCollection
 import no.fintlabs.kafka.event.error.topic.ErrorEventTopicNameParameters
 import no.fintlabs.kafka.event.topic.EventTopicNameParameters
