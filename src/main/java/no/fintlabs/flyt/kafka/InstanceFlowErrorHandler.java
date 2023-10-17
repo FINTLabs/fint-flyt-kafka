@@ -5,11 +5,10 @@ import no.fintlabs.flyt.kafka.headers.InstanceFlowHeaders;
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.kafka.listener.CommonLoggingErrorHandler;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.listener.MessageListenerContainer;
 
-
-public abstract class InstanceFlowErrorHandler extends CommonLoggingErrorHandler {
+public abstract class InstanceFlowErrorHandler extends DefaultErrorHandler {
 
     private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
 
@@ -24,7 +23,6 @@ public abstract class InstanceFlowErrorHandler extends CommonLoggingErrorHandler
             @NonNull Consumer<?, ?> consumer,
             @NonNull MessageListenerContainer container
     ) {
-        super.handleRecord(thrownException, record, consumer, container);
         this.handleInstanceFlowRecord(
                 thrownException.getCause(),
                 this.instanceFlowHeadersMapper.getInstanceFlowHeaders(record.headers()),
