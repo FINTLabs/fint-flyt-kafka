@@ -9,11 +9,13 @@ plugins {
 }
 
 group = 'no.fintlabs'
+version = findProperty("version") ?: "1.0-SNAPSHOT"
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+    withSourcesJar()
 }
 
 publishing {
