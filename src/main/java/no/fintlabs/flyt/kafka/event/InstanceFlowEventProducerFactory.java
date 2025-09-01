@@ -1,23 +1,23 @@
 package no.fintlabs.flyt.kafka.event;
 
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
-import no.fintlabs.kafka.event.EventProducerFactory;
+import no.fintlabs.kafka.producing.ParameterizedTemplateFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class InstanceFlowEventProducerFactory {
 
-    private final EventProducerFactory eventProducerFactory;
+    private final ParameterizedTemplateFactory parameterizedTemplateFactory;
     private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
 
-    public InstanceFlowEventProducerFactory(EventProducerFactory eventProducerFactory, InstanceFlowHeadersMapper instanceFlowHeadersMapper) {
-        this.eventProducerFactory = eventProducerFactory;
+    public InstanceFlowEventProducerFactory(ParameterizedTemplateFactory parameterizedTemplateFactory, InstanceFlowHeadersMapper instanceFlowHeadersMapper) {
+        this.parameterizedTemplateFactory = parameterizedTemplateFactory;
         this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
     }
 
     public <T> InstanceFlowEventProducer<T> createProducer(Class<T> valueClass) {
         return new InstanceFlowEventProducer<>(
-                eventProducerFactory.createProducer(valueClass),
+                parameterizedTemplateFactory.createTemplate(valueClass),
                 instanceFlowHeadersMapper
         );
     }

@@ -1,24 +1,18 @@
 package no.fintlabs.flyt.kafka.event;
 
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
-import no.fintlabs.kafka.event.EventProducer;
-import no.fintlabs.kafka.event.EventProducerRecord;
+import no.fintlabs.kafka.model.ParameterizedProducerRecord;
+import no.fintlabs.kafka.producing.ParameterizedTemplate;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.util.concurrent.ListenableFuture;
 
-public class InstanceFlowEventProducer<T> {
+import java.util.concurrent.CompletableFuture;
 
-    private final EventProducer<T> eventProducer;
-    private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
+public record InstanceFlowEventProducer<T>(ParameterizedTemplate<T> parameterizedTemplate, InstanceFlowHeadersMapper instanceFlowHeadersMapper) {
 
-    public InstanceFlowEventProducer(EventProducer<T> eventProducer, InstanceFlowHeadersMapper instanceFlowHeadersMapper) {
-        this.eventProducer = eventProducer;
-        this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
-    }
-
-    public ListenableFuture<SendResult<String, T>> send(InstanceFlowEventProducerRecord<T> instanceFlowEventProducerRecord) {
-        return eventProducer.send(
-                EventProducerRecord.<T>builder()
+    public CompletableFuture<SendResult<String, T>> send(
+            InstanceFlowEventProducerRecord<T> instanceFlowEventProducerRecord) {
+        return parameterizedTemplate.send(
+                ParameterizedProducerRecord.<T>builder()
                         .topicNameParameters(instanceFlowEventProducerRecord.getTopicNameParameters())
                         .headers(instanceFlowHeadersMapper.toHeaders(instanceFlowEventProducerRecord.getInstanceFlowHeaders()))
                         .key(instanceFlowEventProducerRecord.getKey())

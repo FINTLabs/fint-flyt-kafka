@@ -3,12 +3,13 @@ package no.fintlabs.flyt.kafka.requestreply;
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecord;
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecordMapper;
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
-import no.fintlabs.kafka.common.ListenerContainerFactory;
+import no.fintlabs.kafka.consuming.ErrorHandlerConfiguration;
 import no.fintlabs.kafka.requestreply.ReplyProducerRecord;
-import no.fintlabs.kafka.requestreply.RequestConsumerConfiguration;
-import no.fintlabs.kafka.requestreply.RequestConsumerFactoryService;
-import no.fintlabs.kafka.requestreply.topic.RequestTopicNameParameters;
-import no.fintlabs.kafka.requestreply.topic.RequestTopicNamePatternParameters;
+import no.fintlabs.kafka.requestreply.RequestListenerConfiguration;
+import no.fintlabs.kafka.requestreply.RequestListenerContainerFactory;
+import no.fintlabs.kafka.requestreply.topic.name.RequestTopicNameParameters;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
@@ -16,46 +17,63 @@ import java.util.function.Function;
 @Service
 public class InstanceFlowRequestConsumerFactoryService {
 
-    private final RequestConsumerFactoryService requestConsumerFactoryService;
+    private final RequestListenerContainerFactory requestListenerContainerFactory;
     private final InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper;
     private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
 
     public InstanceFlowRequestConsumerFactoryService(
-            RequestConsumerFactoryService requestConsumerFactoryService,
+            RequestListenerContainerFactory requestListenerContainerFactory,
             InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper,
             InstanceFlowHeadersMapper instanceFlowHeadersMapper
     ) {
-        this.requestConsumerFactoryService = requestConsumerFactoryService;
+        this.requestListenerContainerFactory = requestListenerContainerFactory;
         this.instanceFlowConsumerRecordMapper = instanceFlowConsumerRecordMapper;
         this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
     }
 
-    public <V, R> ListenerContainerFactory<V, RequestTopicNameParameters, RequestTopicNamePatternParameters> createRecordFactory(
+    public <V, R> ConcurrentMessageListenerContainer<String, V> createRecordConsumerContainer(
+            RequestTopicNameParameters requestTopicNameParameters,
             Class<V> valueClass,
             Class<R> replyValueClass,
             Function<InstanceFlowConsumerRecord<V>, InstanceFlowReplyProducerRecord<R>> replyFunction
     ) {
-        return createRecordFactory(valueClass, replyValueClass, replyFunction, RequestConsumerConfiguration.empty());
+        RequestListenerConfiguration<V> defaultConfig = RequestListenerConfiguration
+                .builder(valueClass)
+                .maxPollRecordsKafkaDefault()
+                .maxPollIntervalKafkaDefault()
+                .errorHandler(
+                        ErrorHandlerConfiguration
+                                .builder(valueClass)
+                                .noRetries()
+                                .skipFailedRecords()
+                                .build()
+                )
+                .build();
+        return createRecordConsumerContainer(requestTopicNameParameters, valueClass, replyValueClass, replyFunction, defaultConfig);
     }
 
-    public <V, R> ListenerContainerFactory<V, RequestTopicNameParameters, RequestTopicNamePatternParameters> createRecordFactory(
+    public <V, R> ConcurrentMessageListenerContainer<String, V> createRecordConsumerContainer(
+            RequestTopicNameParameters requestTopicNameParameters,
             Class<V> valueClass,
             Class<R> replyValueClass,
             Function<InstanceFlowConsumerRecord<V>, InstanceFlowReplyProducerRecord<R>> replyFunction,
-            RequestConsumerConfiguration requestConsumerConfiguration
+            RequestListenerConfiguration<V> listenerConfiguration
     ) {
-        return requestConsumerFactoryService.createRecordConsumerFactory(
+        return requestListenerContainerFactory.createRecordConsumerFactory(
+                requestTopicNameParameters,
                 valueClass,
                 replyValueClass,
-                consumerRecord -> {
+                (ConsumerRecord<String, V> consumerRecord) -> {
                     InstanceFlowConsumerRecord<V> instanceFlowConsumerRecord = instanceFlowConsumerRecordMapper.toFlytConsumerRecord(consumerRecord);
                     InstanceFlowReplyProducerRecord<R> instanceFlowReplyProducerRecord = replyFunction.apply(instanceFlowConsumerRecord);
-                    return ReplyProducerRecord.<R>builder()
-                            .headers(instanceFlowHeadersMapper.toHeaders(instanceFlowReplyProducerRecord.getInstanceFlowHeaders()))
-                            .value(instanceFlowReplyProducerRecord.getValue())
-                            .build();
+                    return new ReplyProducerRecord<>(
+                            instanceFlowReplyProducerRecord.instanceFlowHeaders() != null
+                                    ? instanceFlowHeadersMapper.toHeaders(instanceFlowReplyProducerRecord.instanceFlowHeaders())
+                                    : null,
+                            instanceFlowReplyProducerRecord.value()
+                    );
                 },
-                requestConsumerConfiguration
+                listenerConfiguration
         );
     }
 

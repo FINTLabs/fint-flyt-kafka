@@ -1,26 +1,26 @@
 package no.fintlabs.flyt.kafka.entity;
 
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
-import no.fintlabs.kafka.entity.EntityProducerFactory;
+import no.fintlabs.kafka.producing.ParameterizedTemplateFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class InstanceFlowEntityProducerFactory {
 
-    private final EntityProducerFactory entityProducerFactory;
+    private final ParameterizedTemplateFactory parameterizedTemplateFactory;
     private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
 
     public InstanceFlowEntityProducerFactory(
-            EntityProducerFactory entityProducerFactory,
+            ParameterizedTemplateFactory parameterizedTemplateFactory,
             InstanceFlowHeadersMapper instanceFlowHeadersMapper
     ) {
-        this.entityProducerFactory = entityProducerFactory;
+        this.parameterizedTemplateFactory = parameterizedTemplateFactory;
         this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
     }
 
     public <T> InstanceFlowEntityProducer<T> createProducer(Class<T> valueClass) {
         return new InstanceFlowEntityProducer<>(
-                entityProducerFactory.createProducer(valueClass),
+                parameterizedTemplateFactory.createTemplate(valueClass),
                 instanceFlowHeadersMapper
         );
     }

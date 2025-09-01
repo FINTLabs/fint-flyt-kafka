@@ -2,11 +2,10 @@ package no.fintlabs.flyt.kafka.entity;
 
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecord;
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecordMapper;
-import no.fintlabs.kafka.common.ListenerContainerFactory;
-import no.fintlabs.kafka.entity.EntityConsumerConfiguration;
-import no.fintlabs.kafka.entity.EntityConsumerFactoryService;
-import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
-import no.fintlabs.kafka.entity.topic.EntityTopicNamePatternParameters;
+import no.fintlabs.kafka.consuming.ErrorHandlerConfiguration;
+import no.fintlabs.kafka.consuming.ListenerConfiguration;
+import no.fintlabs.kafka.consuming.ParameterizedListenerContainerFactory;
+import no.fintlabs.kafka.consuming.ParameterizedListenerContainerFactoryService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,54 +14,77 @@ import java.util.function.Consumer;
 @Service
 public class InstanceFlowEntityConsumerFactoryService {
 
-    private final EntityConsumerFactoryService entityConsumerFactoryService;
+    private final ParameterizedListenerContainerFactoryService parameterizedListenerContainerFactoryService;
     private final InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper;
 
     public InstanceFlowEntityConsumerFactoryService(
-            EntityConsumerFactoryService entityConsumerFactoryService,
+            ParameterizedListenerContainerFactoryService parameterizedListenerContainerFactoryService,
             InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper
     ) {
-        this.entityConsumerFactoryService = entityConsumerFactoryService;
+        this.parameterizedListenerContainerFactoryService = parameterizedListenerContainerFactoryService;
         this.instanceFlowConsumerRecordMapper = instanceFlowConsumerRecordMapper;
     }
 
-    public <T> ListenerContainerFactory<T, EntityTopicNameParameters, EntityTopicNamePatternParameters> createRecordFactory(
+    public <T> ParameterizedListenerContainerFactory<T> createRecordFactory(
             Class<T> valueClass,
             Consumer<InstanceFlowConsumerRecord<T>> consumer
     ) {
-        return createRecordFactory(valueClass, consumer, EntityConsumerConfiguration.empty());
+        var defaultConfig = ListenerConfiguration
+                .builder(valueClass)
+                .groupIdApplicationDefault()
+                .maxPollRecordsKafkaDefault()
+                .maxPollIntervalKafkaDefault()
+                .errorHandler(
+                        ErrorHandlerConfiguration
+                                .builder(valueClass)
+                                .noRetries()
+                                .skipFailedRecords()
+                                .build()
+                )
+                .continueFromPreviousOffsetOnAssignment()
+                .build();
+        return createRecordFactory(consumer, defaultConfig);
     }
 
-    public <T> ListenerContainerFactory<T, EntityTopicNameParameters, EntityTopicNamePatternParameters> createRecordFactory(
-            Class<T> valueClass,
+    public <T> ParameterizedListenerContainerFactory<T> createRecordFactory(
             Consumer<InstanceFlowConsumerRecord<T>> consumer,
-            EntityConsumerConfiguration entityConsumerConfiguration
+            ListenerConfiguration<T> listenerConfiguration
     ) {
-        return entityConsumerFactoryService.createRecordConsumerFactory(
-                valueClass,
+        return parameterizedListenerContainerFactoryService.createRecordListenerContainerFactory(
                 consumerRecord -> consumer.accept(instanceFlowConsumerRecordMapper.toFlytConsumerRecord(consumerRecord)),
-                entityConsumerConfiguration
+                listenerConfiguration
         );
     }
 
-    public <T> ListenerContainerFactory<T, EntityTopicNameParameters, EntityTopicNamePatternParameters> createBatchFactory(
+    public <T> ParameterizedListenerContainerFactory<T> createBatchFactory(
             Class<T> valueClass,
             Consumer<List<InstanceFlowConsumerRecord<T>>> consumer
     ) {
-        return createBatchFactory(valueClass, consumer, EntityConsumerConfiguration.empty());
+        var defaultConfig = ListenerConfiguration
+                .builder(valueClass)
+                .groupIdApplicationDefault()
+                .maxPollRecordsKafkaDefault()
+                .maxPollIntervalKafkaDefault()
+                .errorHandler(
+                        ErrorHandlerConfiguration
+                                .builder(valueClass)
+                                .noRetries()
+                                .skipFailedRecords()
+                                .build()
+                )
+                .continueFromPreviousOffsetOnAssignment()
+                .build();
+        return createBatchFactory(consumer, defaultConfig);
     }
 
-    public <T> ListenerContainerFactory<T, EntityTopicNameParameters, EntityTopicNamePatternParameters> createBatchFactory(
-            Class<T> valueClass,
+    public <T> ParameterizedListenerContainerFactory<T> createBatchFactory(
             Consumer<List<InstanceFlowConsumerRecord<T>>> consumer,
-            EntityConsumerConfiguration entityConsumerConfiguration
+            ListenerConfiguration<T> listenerConfiguration
     ) {
-        return entityConsumerFactoryService.createBatchConsumerFactory(
-                valueClass,
+        return parameterizedListenerContainerFactoryService.createBatchListenerContainerFactory(
                 consumerRecords -> consumer.accept(instanceFlowConsumerRecordMapper.toFlytConsumerRecords(consumerRecords)),
-                entityConsumerConfiguration
+                listenerConfiguration
         );
     }
-
 
 }

@@ -17,17 +17,18 @@ public abstract class InstanceFlowErrorHandler extends DefaultErrorHandler {
     }
 
     @Override
-    public void handleRecord(
+    public boolean handleOne(
             @NonNull Exception thrownException,
             @NonNull ConsumerRecord<?, ?> record,
             @NonNull Consumer<?, ?> consumer,
             @NonNull MessageListenerContainer container
     ) {
         this.handleInstanceFlowRecord(
-                thrownException.getCause(),
+                thrownException,
                 this.instanceFlowHeadersMapper.getInstanceFlowHeaders(record.headers()),
                 record
         );
+        return super.handleOne(thrownException, record, consumer, container);
     }
 
     public abstract void handleInstanceFlowRecord(

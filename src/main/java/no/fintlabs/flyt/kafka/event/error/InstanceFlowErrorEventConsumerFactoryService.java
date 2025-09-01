@@ -2,12 +2,11 @@ package no.fintlabs.flyt.kafka.event.error;
 
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecord;
 import no.fintlabs.flyt.kafka.InstanceFlowConsumerRecordMapper;
-import no.fintlabs.kafka.common.ListenerContainerFactory;
-import no.fintlabs.kafka.event.error.ErrorCollection;
-import no.fintlabs.kafka.event.error.ErrorEventConsumerConfiguration;
-import no.fintlabs.kafka.event.error.ErrorEventConsumerFactoryService;
-import no.fintlabs.kafka.event.error.topic.ErrorEventTopicNameParameters;
-import no.fintlabs.kafka.event.error.topic.ErrorEventTopicNamePatternParameters;
+import no.fintlabs.kafka.consuming.ErrorHandlerConfiguration;
+import no.fintlabs.kafka.consuming.ListenerConfiguration;
+import no.fintlabs.kafka.consuming.ParameterizedListenerContainerFactory;
+import no.fintlabs.kafka.consuming.ParameterizedListenerContainerFactoryService;
+import no.fintlabs.kafka.model.ErrorCollection;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,48 +15,78 @@ import java.util.function.Consumer;
 @Service
 public class InstanceFlowErrorEventConsumerFactoryService {
 
-    private final ErrorEventConsumerFactoryService errorEventConsumerFactoryService;
+    private final ParameterizedListenerContainerFactoryService parameterizedListenerContainerFactoryService;
     private final InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper;
 
     public InstanceFlowErrorEventConsumerFactoryService(
-            ErrorEventConsumerFactoryService errorEventConsumerFactoryService,
+            ParameterizedListenerContainerFactoryService parameterizedListenerContainerFactoryService,
             InstanceFlowConsumerRecordMapper instanceFlowConsumerRecordMapper
     ) {
-        this.errorEventConsumerFactoryService = errorEventConsumerFactoryService;
+        this.parameterizedListenerContainerFactoryService = parameterizedListenerContainerFactoryService;
         this.instanceFlowConsumerRecordMapper = instanceFlowConsumerRecordMapper;
     }
 
-    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createRecordFactory(
+    public ParameterizedListenerContainerFactory<ErrorCollection> createRecordFactory(
             Consumer<InstanceFlowConsumerRecord<ErrorCollection>> consumer
     ) {
-        return createRecordFactory(consumer, ErrorEventConsumerConfiguration.empty());
+        ListenerConfiguration<ErrorCollection> defaultConfig = ListenerConfiguration
+                .builder(ErrorCollection.class)
+                .groupIdApplicationDefault()
+                .maxPollRecordsKafkaDefault()
+                .maxPollIntervalKafkaDefault()
+                .errorHandler(
+                        ErrorHandlerConfiguration
+                                .builder(ErrorCollection.class)
+                                .noRetries()
+                                .skipFailedRecords()
+                                .build()
+                )
+                .continueFromPreviousOffsetOnAssignment()
+                .build();
+        return createRecordFactory(consumer, defaultConfig);
     }
 
-    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createRecordFactory(
+    public ParameterizedListenerContainerFactory<ErrorCollection> createRecordFactory(
             Consumer<InstanceFlowConsumerRecord<ErrorCollection>> consumer,
-            ErrorEventConsumerConfiguration errorEventConsumerConfiguration
+            ListenerConfiguration<ErrorCollection> listenerConfiguration
     ) {
-        return errorEventConsumerFactoryService.createRecordConsumerFactory(
-                consumerRecord -> consumer.accept(instanceFlowConsumerRecordMapper.toFlytConsumerRecord(consumerRecord)),
-                errorEventConsumerConfiguration
+        return parameterizedListenerContainerFactoryService.createRecordListenerContainerFactory(
+                consumerRecord -> consumer.accept(
+                        instanceFlowConsumerRecordMapper.toFlytConsumerRecord(consumerRecord)),
+                listenerConfiguration
         );
     }
 
-    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createBatchFactory(
+    public ParameterizedListenerContainerFactory<ErrorCollection> createBatchFactory(
             Consumer<List<InstanceFlowConsumerRecord<ErrorCollection>>> consumer
 
     ) {
-        return createBatchFactory(consumer, ErrorEventConsumerConfiguration.empty());
+        ListenerConfiguration<ErrorCollection> defaultConfig = ListenerConfiguration
+                .builder(ErrorCollection.class)
+                .groupIdApplicationDefault()
+                .maxPollRecordsKafkaDefault()
+                .maxPollIntervalKafkaDefault()
+                .errorHandler(
+                        ErrorHandlerConfiguration
+                                .builder(ErrorCollection.class)
+                                .noRetries()
+                                .skipFailedRecords()
+                                .build()
+                )
+                .continueFromPreviousOffsetOnAssignment()
+                .build();
+        return createBatchFactory(consumer, defaultConfig);
     }
 
-    public ListenerContainerFactory<ErrorCollection, ErrorEventTopicNameParameters, ErrorEventTopicNamePatternParameters> createBatchFactory(
+    public ParameterizedListenerContainerFactory<ErrorCollection> createBatchFactory(
             Consumer<List<InstanceFlowConsumerRecord<ErrorCollection>>> consumer,
-            ErrorEventConsumerConfiguration errorEventConsumerConfiguration
+            ListenerConfiguration<ErrorCollection> listenerConfiguration
 
     ) {
-        return errorEventConsumerFactoryService.createBatchConsumerFactory(
-                consumerRecords -> consumer.accept(instanceFlowConsumerRecordMapper.toFlytConsumerRecords(consumerRecords)),
-                errorEventConsumerConfiguration
+        return parameterizedListenerContainerFactoryService.createBatchListenerContainerFactory(
+                consumerRecords -> consumer.accept(
+                        instanceFlowConsumerRecordMapper.toFlytConsumerRecords(consumerRecords)),
+                listenerConfiguration
         );
     }
 

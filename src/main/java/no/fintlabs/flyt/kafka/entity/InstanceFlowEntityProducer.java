@@ -1,24 +1,20 @@
 package no.fintlabs.flyt.kafka.entity;
 
 import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
-import no.fintlabs.kafka.entity.EntityProducer;
-import no.fintlabs.kafka.entity.EntityProducerRecord;
+import no.fintlabs.kafka.model.ParameterizedProducerRecord;
+import no.fintlabs.kafka.producing.ParameterizedTemplate;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.util.concurrent.ListenableFuture;
 
-public class InstanceFlowEntityProducer<T> {
+import java.util.concurrent.CompletableFuture;
 
-    private final EntityProducer<T> entityProducer;
-    private final InstanceFlowHeadersMapper instanceFlowHeadersMapper;
+public record InstanceFlowEntityProducer<T>(
+        ParameterizedTemplate<T> parameterizedTemplate,
+        InstanceFlowHeadersMapper instanceFlowHeadersMapper) {
 
-    public InstanceFlowEntityProducer(EntityProducer<T> entityProducer, InstanceFlowHeadersMapper instanceFlowHeadersMapper) {
-        this.entityProducer = entityProducer;
-        this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
-    }
-
-    public ListenableFuture<SendResult<String, T>> send(InstanceFlowEntityProducerRecord<T> instanceFlowEntityProducerRecord) {
-        return entityProducer.send(
-                EntityProducerRecord.<T>builder()
+    public CompletableFuture<SendResult<String, T>> send(
+            InstanceFlowEntityProducerRecord<T> instanceFlowEntityProducerRecord) {
+        return parameterizedTemplate.send(
+                ParameterizedProducerRecord.<T>builder()
                         .topicNameParameters(instanceFlowEntityProducerRecord.getTopicNameParameters())
                         .headers(instanceFlowHeadersMapper.toHeaders(instanceFlowEntityProducerRecord.getInstanceFlowHeaders()))
                         .key(instanceFlowEntityProducerRecord.getKey())
