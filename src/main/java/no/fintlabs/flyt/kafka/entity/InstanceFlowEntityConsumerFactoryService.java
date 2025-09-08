@@ -41,7 +41,7 @@ public class InstanceFlowEntityConsumerFactoryService {
                                 .skipFailedRecords()
                                 .build()
                 )
-                .continueFromPreviousOffsetOnAssignment()
+                .seekToBeginningOnAssignment()
                 .build();
         return createRecordFactory(consumer, defaultConfig);
     }
@@ -72,7 +72,7 @@ public class InstanceFlowEntityConsumerFactoryService {
                                 .skipFailedRecords()
                                 .build()
                 )
-                .continueFromPreviousOffsetOnAssignment()
+                .seekToBeginningOnAssignment()
                 .build();
         return createBatchFactory(consumer, defaultConfig);
     }

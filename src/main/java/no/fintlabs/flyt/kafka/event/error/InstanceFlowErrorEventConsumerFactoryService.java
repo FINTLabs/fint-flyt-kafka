@@ -41,7 +41,7 @@ public class InstanceFlowErrorEventConsumerFactoryService {
                                 .skipFailedRecords()
                                 .build()
                 )
-                .continueFromPreviousOffsetOnAssignment()
+                .seekToBeginningOnAssignment()
                 .build();
         return createRecordFactory(consumer, defaultConfig);
     }
@@ -73,7 +73,7 @@ public class InstanceFlowErrorEventConsumerFactoryService {
                                 .skipFailedRecords()
                                 .build()
                 )
-                .continueFromPreviousOffsetOnAssignment()
+                .seekToBeginningOnAssignment()
                 .build();
         return createBatchFactory(consumer, defaultConfig);
     }
