@@ -29,10 +29,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(properties = {
-        "fint.kafka.topic.defaults.org-id=test-org-id",
-        "fint.kafka.topic.defaults.domain-context=test-domain-context"
-})
+@SpringBootTest
 @EmbeddedKafka
 @DirtiesContext
 public class InstanceFlowProducerConsumerIntegrationTest {
