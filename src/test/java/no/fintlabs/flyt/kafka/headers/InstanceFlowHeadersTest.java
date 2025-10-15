@@ -1,9 +1,11 @@
 package no.fintlabs.flyt.kafka.headers;
 
+import no.fintlabs.flyt.kafka.instanceflow.headers.InstanceFlowHeaders;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class InstanceFlowHeadersTest {
 

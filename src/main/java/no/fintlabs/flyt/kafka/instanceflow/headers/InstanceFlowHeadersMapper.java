@@ -1,4 +1,4 @@
-package no.fintlabs.flyt.kafka.headers;
+package no.fintlabs.flyt.kafka.instanceflow.headers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,6 +1,6 @@
-package no.fintlabs.flyt.kafka;
+package no.fintlabs.flyt.kafka.instanceflow.consuming;
 
-import no.fintlabs.flyt.kafka.headers.InstanceFlowHeadersMapper;
+import no.fintlabs.flyt.kafka.instanceflow.headers.InstanceFlowHeadersMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package no.fintlabs.flyt.kafka.headers;
+package no.fintlabs.flyt.kafka.instanceflow.headers;
 
 import org.apache.kafka.common.header.Header;
 

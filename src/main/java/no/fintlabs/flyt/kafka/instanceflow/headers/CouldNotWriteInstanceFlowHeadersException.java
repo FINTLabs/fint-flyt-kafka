@@ -1,4 +1,4 @@
-package no.fintlabs.flyt.kafka.headers;
+package no.fintlabs.flyt.kafka.instanceflow.headers;
 
 public class CouldNotWriteInstanceFlowHeadersException extends RuntimeException {
 

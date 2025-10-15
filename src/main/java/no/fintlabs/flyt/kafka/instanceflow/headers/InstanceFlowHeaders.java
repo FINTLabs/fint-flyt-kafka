@@ -1,10 +1,6 @@
-package no.fintlabs.flyt.kafka.headers;
+package no.fintlabs.flyt.kafka.instanceflow.headers;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;

@@ -45,7 +45,7 @@ dependencies {
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.72.Final:osx-aarch_64'
 
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'no.fintlabs:fint-kafka:5.0.0-rc-8'
+    implementation 'no.fintlabs:fint-kafka:5.0.0-rc-11'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
 
     compileOnly 'org.projectlombok:lombok'

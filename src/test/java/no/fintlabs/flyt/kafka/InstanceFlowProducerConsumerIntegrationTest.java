@@ -1,16 +1,12 @@
 package no.fintlabs.flyt.kafka;
 
-import no.fintlabs.flyt.kafka.entity.InstanceFlowEntityConsumerFactoryService;
-import no.fintlabs.flyt.kafka.entity.InstanceFlowEntityProducerFactory;
-import no.fintlabs.flyt.kafka.entity.InstanceFlowEntityProducerRecord;
-import no.fintlabs.flyt.kafka.event.InstanceFlowEventConsumerFactoryService;
-import no.fintlabs.flyt.kafka.event.InstanceFlowEventProducer;
-import no.fintlabs.flyt.kafka.event.InstanceFlowEventProducerFactory;
-import no.fintlabs.flyt.kafka.event.InstanceFlowEventProducerRecord;
-import no.fintlabs.flyt.kafka.event.error.InstanceFlowErrorEventConsumerFactoryService;
-import no.fintlabs.flyt.kafka.event.error.InstanceFlowErrorEventProducer;
-import no.fintlabs.flyt.kafka.event.error.InstanceFlowErrorEventProducerRecord;
-import no.fintlabs.flyt.kafka.headers.InstanceFlowHeaders;
+import no.fintlabs.flyt.kafka.instanceflow.consuming.InstanceFlowConsumerRecord;
+import no.fintlabs.flyt.kafka.instanceflow.consuming.InstanceFlowListenerFactoryService;
+import no.fintlabs.flyt.kafka.instanceflow.headers.InstanceFlowHeaders;
+import no.fintlabs.flyt.kafka.instanceflow.producing.InstanceFlowProducerRecord;
+import no.fintlabs.flyt.kafka.instanceflow.producing.InstanceFlowTemplate;
+import no.fintlabs.flyt.kafka.instanceflow.producing.InstanceFlowTemplateFactory;
+import no.fintlabs.kafka.consuming.ListenerConfiguration;
 import no.fintlabs.kafka.model.Error;
 import no.fintlabs.kafka.model.ErrorCollection;
 import no.fintlabs.kafka.topic.name.EntityTopicNameParameters;
@@ -41,20 +37,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext
 public class InstanceFlowProducerConsumerIntegrationTest {
 
-    @Autowired
-    private InstanceFlowEventProducerFactory eventProducerFactory;
-    @Autowired
-    private InstanceFlowEventConsumerFactoryService eventConsumerFactory;
+    private final InstanceFlowTemplateFactory instanceFlowTemplateFactory;
+    private final InstanceFlowListenerFactoryService instanceFlowListenerFactoryService;
 
-    @Autowired
-    private InstanceFlowErrorEventProducer errorEventProducer;
-    @Autowired
-    private InstanceFlowErrorEventConsumerFactoryService errorEventConsumerFactory;
-
-    @Autowired
-    private InstanceFlowEntityProducerFactory entityProducerFactory;
-    @Autowired
-    private InstanceFlowEntityConsumerFactoryService entityConsumerFactory;
+    public InstanceFlowProducerConsumerIntegrationTest(
+            @Autowired InstanceFlowTemplateFactory instanceFlowTemplateFactory,
+            @Autowired InstanceFlowListenerFactoryService instanceFlowListenerFactoryService
+    ) {
+        this.instanceFlowTemplateFactory = instanceFlowTemplateFactory;
+        this.instanceFlowListenerFactoryService = instanceFlowListenerFactoryService;
+    }
 
     private record TestObject(Integer integer, String string) {
     }
@@ -63,13 +55,20 @@ public class InstanceFlowProducerConsumerIntegrationTest {
     public void eventTest() throws InterruptedException {
         CountDownLatch eventCDL = new CountDownLatch(1);
         ArrayList<InstanceFlowConsumerRecord<TestObject>> consumedEvents = new ArrayList<>();
-        InstanceFlowEventProducer<TestObject> eventProducer = eventProducerFactory.createProducer(TestObject.class);
-        var eventConsumer = eventConsumerFactory.createRecordFactory(
+        var listener = instanceFlowListenerFactoryService.createRecordListenerContainerFactory(
                 TestObject.class,
                 consumerRecord -> {
                     consumedEvents.add(consumerRecord);
                     eventCDL.countDown();
-                }
+                },
+                ListenerConfiguration
+                        .stepBuilder()
+                        .groupIdApplicationDefault()
+                        .maxPollRecordsKafkaDefault()
+                        .maxPollIntervalKafkaDefault()
+                        .continueFromPreviousOffsetOnAssignment()
+                        .build(),
+                null
         ).createContainer(EventTopicNameParameters.builder()
                 .topicNamePrefixParameters(
                         TopicNamePrefixParameters.builder()
@@ -79,11 +78,11 @@ public class InstanceFlowProducerConsumerIntegrationTest {
                 )
                 .eventName("event")
                 .build());
-        eventConsumer.start();
+        listener.start();
 
         TestObject testObject = new TestObject(2, "testObjectString");
 
-        InstanceFlowEventProducerRecord<TestObject> record = InstanceFlowEventProducerRecord.<TestObject>builder()
+        InstanceFlowProducerRecord<TestObject> record = InstanceFlowProducerRecord.<TestObject>builder()
                 .topicNameParameters(EventTopicNameParameters.builder()
                         .topicNamePrefixParameters(
                                 TopicNamePrefixParameters.builder()
@@ -96,7 +95,9 @@ public class InstanceFlowProducerConsumerIntegrationTest {
                 .instanceFlowHeaders(createInstanceFlowHeaders())
                 .value(testObject)
                 .build();
-        eventProducer.send(record);
+
+        InstanceFlowTemplate<TestObject> template = instanceFlowTemplateFactory.createTemplate(TestObject.class);
+        template.send(record);
 
         boolean awaitFinished = eventCDL.await(10, TimeUnit.SECONDS);
         assertTrue(awaitFinished, "The count down latch did not count down to zero within the expected time");
@@ -110,11 +111,20 @@ public class InstanceFlowProducerConsumerIntegrationTest {
     public void errorEventTest() throws InterruptedException {
         CountDownLatch eventCDL = new CountDownLatch(1);
         ArrayList<InstanceFlowConsumerRecord<ErrorCollection>> consumedEvents = new ArrayList<>();
-        var eventConsumer = errorEventConsumerFactory.createRecordFactory(
+        var listener = instanceFlowListenerFactoryService.createRecordListenerContainerFactory(
+                ErrorCollection.class,
                 consumerRecord -> {
                     consumedEvents.add(consumerRecord);
                     eventCDL.countDown();
-                }
+                },
+                ListenerConfiguration
+                        .stepBuilder()
+                        .groupIdApplicationDefault()
+                        .maxPollRecordsKafkaDefault()
+                        .maxPollIntervalKafkaDefault()
+                        .continueFromPreviousOffsetOnAssignment()
+                        .build(),
+                null
         ).createContainer(ErrorEventTopicNameParameters.builder()
                 .topicNamePrefixParameters(
                         TopicNamePrefixParameters.builder()
@@ -124,7 +134,7 @@ public class InstanceFlowProducerConsumerIntegrationTest {
                 )
                 .errorEventName("event")
                 .build());
-        eventConsumer.start();
+        listener.start();
 
         ErrorCollection errorCollection = new ErrorCollection(List.of(
                 Error.builder()
@@ -141,7 +151,7 @@ public class InstanceFlowProducerConsumerIntegrationTest {
                         .build()
         ));
 
-        InstanceFlowErrorEventProducerRecord record = InstanceFlowErrorEventProducerRecord.builder()
+        InstanceFlowProducerRecord<ErrorCollection> record = InstanceFlowProducerRecord.<ErrorCollection>builder()
                 .topicNameParameters(ErrorEventTopicNameParameters.builder()
                         .topicNamePrefixParameters(
                                 TopicNamePrefixParameters.builder()
@@ -151,10 +161,11 @@ public class InstanceFlowProducerConsumerIntegrationTest {
                         ).errorEventName("event")
                         .build())
                 .instanceFlowHeaders(createInstanceFlowHeaders())
-                .errorCollection(errorCollection)
+                .value(errorCollection)
                 .build();
 
-        errorEventProducer.send(record);
+        InstanceFlowTemplate<ErrorCollection> template = instanceFlowTemplateFactory.createTemplate(ErrorCollection.class);
+        template.send(record);
 
         boolean awaitFinished = eventCDL.await(10, TimeUnit.SECONDS);
         assertTrue(awaitFinished, "The count down latch did not count down to zero within the expected time");
@@ -168,13 +179,21 @@ public class InstanceFlowProducerConsumerIntegrationTest {
     public void entityTest() throws InterruptedException {
         CountDownLatch entityCDL = new CountDownLatch(1);
         ArrayList<InstanceFlowConsumerRecord<String>> consumedEntities = new ArrayList<>();
-        var entityProducer = entityProducerFactory.createProducer(String.class);
-        var entityConsumer = entityConsumerFactory.createRecordFactory(
+        var entityProducer = instanceFlowTemplateFactory.createTemplate(String.class);
+        var entityConsumer = instanceFlowListenerFactoryService.createRecordListenerContainerFactory(
                 String.class,
                 consumerRecord -> {
                     consumedEntities.add(consumerRecord);
                     entityCDL.countDown();
-                }
+                },
+                ListenerConfiguration
+                        .stepBuilder()
+                        .groupIdApplicationDefault()
+                        .maxPollRecordsKafkaDefault()
+                        .maxPollIntervalKafkaDefault()
+                        .continueFromPreviousOffsetOnAssignment()
+                        .build(),
+                null
         ).createContainer(EntityTopicNameParameters.builder()
                 .topicNamePrefixParameters(
                         TopicNamePrefixParameters.builder()
@@ -186,7 +205,7 @@ public class InstanceFlowProducerConsumerIntegrationTest {
                 .build());
         entityConsumer.start();
 
-        InstanceFlowEntityProducerRecord<String> record = InstanceFlowEntityProducerRecord.<String>builder()
+        InstanceFlowProducerRecord<String> record = InstanceFlowProducerRecord.<String>builder()
                 .topicNameParameters(
                         EntityTopicNameParameters.builder()
                                 .topicNamePrefixParameters(
