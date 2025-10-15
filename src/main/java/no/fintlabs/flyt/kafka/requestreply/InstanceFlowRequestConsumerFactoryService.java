@@ -49,10 +49,10 @@ public class InstanceFlowRequestConsumerFactoryService {
                     InstanceFlowReplyProducerRecord<R> instanceFlowReplyProducerRecord =
                             replyFunction.apply(instanceFlowConsumerRecord);
                     return new ReplyProducerRecord<>(
-                            instanceFlowReplyProducerRecord.instanceFlowHeaders() != null
-                                    ? instanceFlowHeadersMapper.toHeaders(instanceFlowReplyProducerRecord.instanceFlowHeaders())
+                            instanceFlowReplyProducerRecord.getInstanceFlowHeaders() != null
+                                    ? instanceFlowHeadersMapper.toHeaders(instanceFlowReplyProducerRecord.getInstanceFlowHeaders())
                                     : null,
-                            instanceFlowReplyProducerRecord.value()
+                            instanceFlowReplyProducerRecord.getValue()
                     );
                 },
                 listenerConfiguration,

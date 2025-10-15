@@ -42,7 +42,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'no.fintlabs:fint-kafka:5.0.0-rc-11'
+    implementation 'no.fintlabs:fint-kafka:5.0.0-rc-12'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
 
     compileOnly 'org.projectlombok:lombok'

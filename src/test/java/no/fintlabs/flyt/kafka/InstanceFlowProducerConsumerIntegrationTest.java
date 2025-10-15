@@ -100,8 +100,8 @@ public class InstanceFlowProducerConsumerIntegrationTest {
         assertTrue(awaitFinished, "The count down latch did not count down to zero within the expected time");
 
         assertEquals(1, consumedEvents.size());
-        assertEquals(createInstanceFlowHeaders(), consumedEvents.getFirst().instanceFlowHeaders());
-        assertEquals(testObject, consumedEvents.getFirst().consumerRecord().value());
+        assertEquals(createInstanceFlowHeaders(), consumedEvents.getFirst().getInstanceFlowHeaders());
+        assertEquals(testObject, consumedEvents.getFirst().getConsumerRecord().value());
     }
 
     @Test
@@ -168,8 +168,8 @@ public class InstanceFlowProducerConsumerIntegrationTest {
         assertTrue(awaitFinished, "The count down latch did not count down to zero within the expected time");
 
         assertEquals(1, consumedEvents.size());
-        assertEquals(createInstanceFlowHeaders(), consumedEvents.getFirst().instanceFlowHeaders());
-        assertEquals(errorCollection, consumedEvents.getFirst().consumerRecord().value());
+        assertEquals(createInstanceFlowHeaders(), consumedEvents.getFirst().getInstanceFlowHeaders());
+        assertEquals(errorCollection, consumedEvents.getFirst().getConsumerRecord().value());
     }
 
     @Test
@@ -224,8 +224,8 @@ public class InstanceFlowProducerConsumerIntegrationTest {
         assertTrue(awaitFinished, "The count down latch did not count down to zero within the expected time");
 
         assertEquals(1, consumedEntities.size());
-        assertEquals(createInstanceFlowHeaders(), consumedEntities.getFirst().instanceFlowHeaders());
-        assertEquals("valueString", consumedEntities.getFirst().consumerRecord().value());
+        assertEquals(createInstanceFlowHeaders(), consumedEntities.getFirst().getInstanceFlowHeaders());
+        assertEquals("valueString", consumedEntities.getFirst().getConsumerRecord().value());
     }
 
     private InstanceFlowHeaders createInstanceFlowHeaders() {

@@ -1,6 +1,12 @@
 package no.fintlabs.flyt.kafka.requestreply;
 
+import lombok.Builder;
+import lombok.Getter;
 import no.fintlabs.flyt.kafka.instanceflow.headers.InstanceFlowHeaders;
 
-public record InstanceFlowReplyProducerRecord<T>(InstanceFlowHeaders instanceFlowHeaders, T value) {
+@Builder
+@Getter
+public final class InstanceFlowReplyProducerRecord<T> {
+    private final InstanceFlowHeaders instanceFlowHeaders;
+    private final T value;
 }
