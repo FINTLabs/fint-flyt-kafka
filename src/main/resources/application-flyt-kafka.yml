@@ -1,0 +1,4 @@
+novari:
+  kafka:
+    topic:
+      domain-context: flyt

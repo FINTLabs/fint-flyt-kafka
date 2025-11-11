@@ -31,7 +31,7 @@ Replace `<version>` with the latest release version.
 To enable FINT Flyt Kafka configuration in your Spring Boot application, add the following to your main application class:
 
 ```java
-import no.fintlabs.kafka.flyt.FlytKafkaConfiguration;
+import no.novari.kafka.flyt.FlytKafkaConfiguration;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
@@ -47,7 +47,7 @@ public class YourApplication {
 
 ### Autoconfigured properties
 To import these configurations, add ``@Import(FlytKafkaConfiguration.class)`` to your main application.
-* ``fint.kafka.topic.domain-context: flyt`` - Used as the second component in generated topic names
+* ``novari.kafka.topic.domain-context: flyt`` - Used as the second component in generated topic names
 
 ## Instance flow API
 
