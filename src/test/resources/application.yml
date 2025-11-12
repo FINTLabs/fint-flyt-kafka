@@ -5,6 +5,10 @@ spring:
       group-id: test
     bootstrap-servers: ${spring.embedded.kafka.brokers}
 
+fint:
+  kafka:
+    enable-ssl: false
+
 novari:
   kafka:
     topic:
