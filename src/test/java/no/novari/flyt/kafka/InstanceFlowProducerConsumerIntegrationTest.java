@@ -68,7 +68,7 @@ public class InstanceFlowProducerConsumerIntegrationTest {
                 null
         ).createContainer(EventTopicNameParameters.builder()
                 .topicNamePrefixParameters(
-                        TopicNamePrefixParameters.builder()
+                        TopicNamePrefixParameters.stepBuilder()
                                 .orgId("test-org-id")
                                 .domainContext("test-domain-context")
                                 .build()
@@ -82,7 +82,7 @@ public class InstanceFlowProducerConsumerIntegrationTest {
         InstanceFlowProducerRecord<TestObject> record = InstanceFlowProducerRecord.<TestObject>builder()
                 .topicNameParameters(EventTopicNameParameters.builder()
                         .topicNamePrefixParameters(
-                                TopicNamePrefixParameters.builder()
+                                TopicNamePrefixParameters.stepBuilder()
                                         .orgId("test-org-id")
                                         .domainContext("test-domain-context")
                                         .build()
@@ -124,7 +124,7 @@ public class InstanceFlowProducerConsumerIntegrationTest {
                 null
         ).createContainer(ErrorEventTopicNameParameters.builder()
                 .topicNamePrefixParameters(
-                        TopicNamePrefixParameters.builder()
+                        TopicNamePrefixParameters.stepBuilder()
                                 .orgId("test-org-id")
                                 .domainContext("test-domain-context")
                                 .build()
@@ -151,7 +151,7 @@ public class InstanceFlowProducerConsumerIntegrationTest {
         InstanceFlowProducerRecord<ErrorCollection> record = InstanceFlowProducerRecord.<ErrorCollection>builder()
                 .topicNameParameters(ErrorEventTopicNameParameters.builder()
                         .topicNamePrefixParameters(
-                                TopicNamePrefixParameters.builder()
+                                TopicNamePrefixParameters.stepBuilder()
                                         .orgId("test-org-id")
                                         .domainContext("test-domain-context")
                                         .build()
@@ -193,7 +193,7 @@ public class InstanceFlowProducerConsumerIntegrationTest {
                 null
         ).createContainer(EntityTopicNameParameters.builder()
                 .topicNamePrefixParameters(
-                        TopicNamePrefixParameters.builder()
+                        TopicNamePrefixParameters.stepBuilder()
                                 .orgId("test-org-id")
                                 .domainContext("test-domain-context")
                                 .build()
@@ -206,7 +206,7 @@ public class InstanceFlowProducerConsumerIntegrationTest {
                 .topicNameParameters(
                         EntityTopicNameParameters.builder()
                                 .topicNamePrefixParameters(
-                                        TopicNamePrefixParameters.builder()
+                                        TopicNamePrefixParameters.stepBuilder()
                                                 .orgId("test-org-id")
                                                 .domainContext("test-domain-context")
                                                 .build()
