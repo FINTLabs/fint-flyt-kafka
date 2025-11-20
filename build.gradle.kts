@@ -18,12 +18,6 @@ java {
     withSourcesJar()
 }
 
-publishing {
-    repositories {
-        mavenLocal()
-    }
-}
-
 repositories {
     mavenLocal()
     maven {
@@ -39,19 +33,27 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("org.springframework.kafka:spring-kafka")
 
     implementation("no.novari:kafka:5.0.0-rc-19")
 
+    implementation("org.apache.logging.log4j:log4j-api")
+
     compileOnly("org.projectlombok:lombok")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
 
     testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.springframework.boot:spring-boot-test")
+    testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
+
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.springframework.kafka:spring-kafka-test")
 }
 
