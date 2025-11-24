@@ -34,9 +34,8 @@ dependencyManagement {
 
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
-    implementation("org.springframework.kafka:spring-kafka")
 
-    implementation("no.novari:kafka:5.0.0-rc-20")
+    implementation("no.novari:kafka:5.0.0-rc-21")
 
     implementation("org.apache.logging.log4j:log4j-api")
 
