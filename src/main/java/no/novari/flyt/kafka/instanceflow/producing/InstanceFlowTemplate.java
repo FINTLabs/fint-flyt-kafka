@@ -1,7 +1,7 @@
 package no.novari.flyt.kafka.instanceflow.producing;
 
 import no.novari.flyt.kafka.instanceflow.headers.InstanceFlowHeadersMapper;
-import no.novari.kafka.model.ParameterizedProducerRecord;
+import no.novari.kafka.producing.ParameterizedProducerRecord;
 import no.novari.kafka.producing.ParameterizedTemplate;
 import org.springframework.kafka.support.SendResult;
 

@@ -39,14 +39,15 @@ public class InstanceFlowErrorHandlerFactory {
                 .ifPresent(errorHandlerConfigurationBuilder::defaultBackoff);
 
         instanceFlowErrorHandlerConfiguration.getRecoverer().ifPresent(recoverer ->
-                errorHandlerConfigurationBuilder.recoverer(
-                        ((consumerRecord, consumer, exception) ->
-                                recoverer.accept(
-                                        instanceFlowConsumerRecordMapper.toFlytConsumerRecord(consumerRecord),
-                                        consumer,
-                                        exception
-                                ))
-                )
+                errorHandlerConfigurationBuilder.customRecoverer(
+                                ((consumerRecord, consumer, exception) ->
+                                        recoverer.accept(
+                                                instanceFlowConsumerRecordMapper.toFlytConsumerRecord(consumerRecord),
+                                                consumer,
+                                                exception
+                                        ))
+                        )
+                        .classificationType(ErrorHandlerConfiguration.ClassificationType.DEFAULT)
         );
 
         return errorHandlerFactory.createErrorHandler(errorHandlerConfigurationBuilder.build());
