@@ -35,7 +35,7 @@ dependencyManagement {
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
 
-    implementation("no.novari:kafka:5.0.0-rc-21")
+    api("no.novari:kafka:5.0.0-rc-21")
 
     implementation("org.apache.logging.log4j:log4j-api")
 
