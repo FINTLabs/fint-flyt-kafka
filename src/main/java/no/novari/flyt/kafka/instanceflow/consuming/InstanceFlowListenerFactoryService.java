@@ -31,7 +31,8 @@ public class InstanceFlowListenerFactoryService {
         return parameterizedListenerContainerFactoryService.createRecordListenerContainerFactory(
                 valueClass,
                 consumerRecord ->
-                        recordProcessor.accept(instanceFlowConsumerRecordMapper.toFlytConsumerRecord(consumerRecord)),
+                        recordProcessor.accept(instanceFlowConsumerRecordMapper.toInstanceFlowConsumerRecord(
+                                consumerRecord)),
                 listenerConfiguration,
                 errorHandler
         );
@@ -46,7 +47,8 @@ public class InstanceFlowListenerFactoryService {
         return parameterizedListenerContainerFactoryService.createBatchListenerContainerFactory(
                 valueClass,
                 consumerRecords ->
-                        batchProcessor.accept(instanceFlowConsumerRecordMapper.toFlytConsumerRecords(consumerRecords)),
+                        batchProcessor.accept(instanceFlowConsumerRecordMapper.toInstanceFlowConsumerRecords(
+                                consumerRecords)),
                 listenerConfiguration,
                 errorHandler
         );

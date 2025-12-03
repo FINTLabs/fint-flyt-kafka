@@ -15,12 +15,20 @@ public class InstanceFlowConsumerRecordMapper {
         this.instanceFlowHeadersMapper = instanceFlowHeadersMapper;
     }
 
-    public <T> InstanceFlowConsumerRecord<T> toFlytConsumerRecord(ConsumerRecord<String, T> consumerRecord) {
-        return new InstanceFlowConsumerRecord<>(instanceFlowHeadersMapper.getInstanceFlowHeaders(consumerRecord.headers()), consumerRecord);
+    public <T> InstanceFlowConsumerRecord<T> toInstanceFlowConsumerRecord(ConsumerRecord<String, T> consumerRecord) {
+        return new InstanceFlowConsumerRecord<>(
+                instanceFlowHeadersMapper.getInstanceFlowHeaders(consumerRecord.headers()),
+                consumerRecord
+        );
     }
 
-    public <T> List<InstanceFlowConsumerRecord<T>> toFlytConsumerRecords(List<ConsumerRecord<String, T>> consumerRecords) {
-        return consumerRecords.stream().map(this::toFlytConsumerRecord).toList();
+    public <T> List<InstanceFlowConsumerRecord<T>> toInstanceFlowConsumerRecords(
+            List<ConsumerRecord<String, T>> consumerRecords
+    ) {
+        return consumerRecords
+                .stream()
+                .map(this::toInstanceFlowConsumerRecord)
+                .toList();
     }
 
 }
