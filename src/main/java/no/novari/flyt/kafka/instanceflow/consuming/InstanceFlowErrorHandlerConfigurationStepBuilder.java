@@ -2,51 +2,28 @@ package no.novari.flyt.kafka.instanceflow.consuming;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.logging.log4j.util.TriConsumer;
+import no.novari.kafka.consuming.ErrorHandlerConfiguration;
 import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.ExponentialBackOff;
 import org.springframework.util.backoff.FixedBackOff;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class InstanceFlowErrorHandlerConfigurationStepBuilder {
 
-    static <VALUE> InstanceFlowErrorHandlerConfigurationStepBuilder.RetryStep<VALUE> firstStep(Class<VALUE> consumerRecordValueClass) {
-        return new InstanceFlowErrorHandlerConfigurationStepBuilder.Steps<>(consumerRecordValueClass);
+    static <VALUE> InstanceFlowErrorHandlerConfigurationStepBuilder.RetryStep<VALUE> firstStep() {
+        return new InstanceFlowErrorHandlerConfigurationStepBuilder.Steps<>();
     }
 
-    public interface RetryStep<VALUE> extends InstanceFlowErrorHandlerConfigurationStepBuilder.DefaultRetryStep<VALUE>, InstanceFlowErrorHandlerConfigurationStepBuilder.RetryFunctionStep<VALUE> {
+
+    public interface RetryStep<VALUE> extends DefaultRetryStep<VALUE>, RetryFunctionStep<VALUE> {
     }
 
-    public interface DefaultRetryStep<VALUE> {
-        RecoveryStep<VALUE> noRetries();
-
-        RecoveryStep<VALUE> retryWithFixedInterval(
-                Duration interval,
-                int maxRetries
-        );
-
-        RecoveryStep<VALUE> retryWithExponentialInterval(
-                Duration initialInterval,
-                double intervalMultiplier,
-                Duration maxInterval,
-                Duration maxElapsedTime
-        );
-
-        RecoveryStep<VALUE> retryWithExponentialInterval(
-                Duration initialInterval,
-                double intervalMultiplier,
-                Duration maxInterval,
-                int maxRetries
-        );
-
-    }
 
     public interface RetryFunctionStep<VALUE> {
         RetryFunctionDefaultStep<VALUE> retryWithBackoffFunction(
@@ -54,85 +31,99 @@ public class InstanceFlowErrorHandlerConfigurationStepBuilder {
         );
     }
 
+
     public interface RetryFunctionDefaultStep<VALUE> {
         DefaultRetryStep<VALUE> orElse();
     }
+
+
+    public interface DefaultRetryStep<VALUE> {
+        RecoveryStep<VALUE> noRetries();
+
+        RetryClassificationStep<VALUE> retryWithFixedInterval(
+                Duration interval,
+                int maxRetries
+        );
+
+        RetryClassificationStep<VALUE> retryWithExponentialInterval(
+                Duration initialInterval,
+                double intervalMultiplier,
+                Duration maxInterval,
+                Duration maxElapsedTime
+        );
+
+        RetryClassificationStep<VALUE> retryWithExponentialInterval(
+                Duration initialInterval,
+                double intervalMultiplier,
+                Duration maxInterval,
+                int maxRetries
+        );
+    }
+
+
+    public interface RetryClassificationStep<VALUE> {
+        RetryFailureChangeStep<VALUE> retryOnly(Collection<Class<? extends Exception>> exceptions);
+
+        RetryFailureChangeStep<VALUE> excludeExceptionsFromRetry(Collection<Class<? extends Exception>> exceptions);
+
+        RetryFailureChangeStep<VALUE> useDefaultRetryClassification();
+    }
+
+
+    public interface RetryFailureChangeStep<VALUE> {
+        RecoveryStep<VALUE> restartRetryOnExceptionChange();
+
+        RecoveryStep<VALUE> continueRetryOnExceptionChange();
+    }
+
 
     public interface RecoveryStep<VALUE> {
 
         BuilderStep<VALUE> skipFailedRecords();
 
-        BuilderStep<VALUE> handleFailedRecords(
-                TriConsumer<InstanceFlowConsumerRecord<VALUE>, Consumer<String, VALUE>, Exception> customRecoverer
-        );
-
-        BuilderStep<VALUE> handleFailedRecords(
-                BiConsumer<InstanceFlowConsumerRecord<VALUE>, Exception> customRecoverer
+        RecoveryFailureStep<VALUE> recoverFailedRecords(
+                InstanceFlowErrorHandlerConfiguration.InstanceFlowRecoverer<VALUE> customRecoverer
         );
     }
+
+
+    public interface RecoveryFailureStep<VALUE> {
+        BuilderStep<VALUE> skipRecordOnRecoveryFailure();
+
+        BuilderStep<VALUE> reprocessAndRetryRecordOnRecoveryFailure();
+
+        BuilderStep<VALUE> reprocessRecordOnRecoveryFailure();
+    }
+
 
     public interface BuilderStep<VALUE> {
         InstanceFlowErrorHandlerConfiguration<VALUE> build();
     }
 
+
     private static class Steps<VALUE> implements
             RetryStep<VALUE>,
             DefaultRetryStep<VALUE>,
             RetryFunctionDefaultStep<VALUE>,
+            RetryClassificationStep<VALUE>,
+            RetryFailureChangeStep<VALUE>,
             RecoveryStep<VALUE>,
+            RecoveryFailureStep<VALUE>,
             BuilderStep<VALUE> {
 
-        private final Class<VALUE> consumerRecordValueClass;
         private BackOff defaultBackOff;
         private BiFunction<InstanceFlowConsumerRecord<VALUE>, Exception, Optional<BackOff>> backOffFunction;
-        private TriConsumer<InstanceFlowConsumerRecord<VALUE>, Consumer<String, VALUE>, Exception> customRecoverer;
+        private boolean restartRetryOnExceptionChange;
+        private InstanceFlowErrorHandlerConfiguration.InstanceFlowRecoverer<VALUE> customRecoverer;
 
-        public Steps(Class<VALUE> consumerRecordValueClass) {
-            this.consumerRecordValueClass = consumerRecordValueClass;
-        }
+        private boolean skipRecordOnRecoveryFailure;
+        private boolean restartRetryOnRecoveryFailure;
+
+        private ErrorHandlerConfiguration.ClassificationType classificationType;
+        private Collection<Class<? extends Exception>> classificationExceptions;
 
         @Override
         public RecoveryStep<VALUE> noRetries() {
-            return this;
-        }
-
-        @Override
-        public RecoveryStep<VALUE> retryWithFixedInterval(Duration interval, int maxRetries) {
-            defaultBackOff = new FixedBackOff(interval.toMillis(), maxRetries);
-            return this;
-        }
-
-        @Override
-        public RecoveryStep<VALUE> retryWithExponentialInterval(
-                Duration initialInterval,
-                double intervalMultiplier,
-                Duration maxInterval,
-                Duration maxElapsedTime
-        ) {
-            ExponentialBackOff exponentialBackOff = new ExponentialBackOff(
-                    initialInterval.toMillis(),
-                    intervalMultiplier
-            );
-            exponentialBackOff.setMaxInterval(maxInterval.toMillis());
-            exponentialBackOff.setMaxElapsedTime(maxElapsedTime.toMillis());
-            defaultBackOff = exponentialBackOff;
-            return this;
-        }
-
-        @Override
-        public RecoveryStep<VALUE> retryWithExponentialInterval(
-                Duration initialInterval,
-                double intervalMultiplier,
-                Duration maxInterval,
-                int maxRetries
-        ) {
-            ExponentialBackOffWithMaxRetries exponentialBackOff = new ExponentialBackOffWithMaxRetries(
-                    maxRetries
-            );
-            exponentialBackOff.setInitialInterval(initialInterval.toMillis());
-            exponentialBackOff.setMultiplier(intervalMultiplier);
-            exponentialBackOff.setMaxInterval(maxInterval.toMillis());
-            defaultBackOff = exponentialBackOff;
             return this;
         }
 
@@ -150,36 +141,121 @@ public class InstanceFlowErrorHandlerConfigurationStepBuilder {
         }
 
         @Override
+        public RetryClassificationStep<VALUE> retryWithFixedInterval(Duration interval, int maxRetries) {
+            defaultBackOff = new FixedBackOff(interval.toMillis(), maxRetries);
+            return this;
+        }
+
+        @Override
+        public RetryClassificationStep<VALUE> retryWithExponentialInterval(
+                Duration initialInterval,
+                double intervalMultiplier,
+                Duration maxInterval,
+                Duration maxElapsedTime
+        ) {
+            ExponentialBackOff exponentialBackOff = new ExponentialBackOff(
+                    initialInterval.toMillis(),
+                    intervalMultiplier
+            );
+            exponentialBackOff.setMaxInterval(maxInterval.toMillis());
+            exponentialBackOff.setMaxElapsedTime(maxElapsedTime.toMillis());
+            defaultBackOff = exponentialBackOff;
+            return this;
+        }
+
+        @Override
+        public RetryClassificationStep<VALUE> retryWithExponentialInterval(
+                Duration initialInterval,
+                double intervalMultiplier,
+                Duration maxInterval,
+                int maxRetries
+        ) {
+            ExponentialBackOffWithMaxRetries exponentialBackOff = new ExponentialBackOffWithMaxRetries(
+                    maxRetries
+            );
+            exponentialBackOff.setInitialInterval(initialInterval.toMillis());
+            exponentialBackOff.setMultiplier(intervalMultiplier);
+            exponentialBackOff.setMaxInterval(maxInterval.toMillis());
+            defaultBackOff = exponentialBackOff;
+            return this;
+        }
+
+        @Override
+        public RetryFailureChangeStep<VALUE> retryOnly(Collection<Class<? extends Exception>> exceptions) {
+            classificationType = ErrorHandlerConfiguration.ClassificationType.ONLY;
+            classificationExceptions = exceptions;
+            return this;
+        }
+
+        @Override
+        public RetryFailureChangeStep<VALUE> excludeExceptionsFromRetry(Collection<Class<? extends Exception>> exceptions) {
+            classificationType = ErrorHandlerConfiguration.ClassificationType.EXCLUDE;
+            classificationExceptions = exceptions;
+            return this;
+        }
+
+        @Override
+        public RetryFailureChangeStep<VALUE> useDefaultRetryClassification() {
+            classificationType = ErrorHandlerConfiguration.ClassificationType.DEFAULT;
+            return this;
+        }
+
+        @Override
+        public RecoveryStep<VALUE> restartRetryOnExceptionChange() {
+            this.restartRetryOnExceptionChange = true;
+            return this;
+        }
+
+        @Override
+        public RecoveryStep<VALUE> continueRetryOnExceptionChange() {
+            this.restartRetryOnExceptionChange = false;
+            return this;
+        }
+
+        @Override
         public BuilderStep<VALUE> skipFailedRecords() {
             return this;
         }
 
         @Override
-        public BuilderStep<VALUE> handleFailedRecords(
-                TriConsumer<InstanceFlowConsumerRecord<VALUE>, Consumer<String, VALUE>, Exception> customRecoverer
+        public RecoveryFailureStep<VALUE> recoverFailedRecords(
+                InstanceFlowErrorHandlerConfiguration.InstanceFlowRecoverer<VALUE> customRecoverer
         ) {
             this.customRecoverer = customRecoverer;
             return this;
         }
 
         @Override
-        public BuilderStep<VALUE> handleFailedRecords(
-                BiConsumer<InstanceFlowConsumerRecord<VALUE>, Exception> customRecoverer
-        ) {
-            this.customRecoverer =
-                    (consumerRecord, consumer, exception)
-                            -> customRecoverer.accept(consumerRecord, exception);
+        public BuilderStep<VALUE> skipRecordOnRecoveryFailure() {
+            this.skipRecordOnRecoveryFailure = true;
+            return this;
+        }
+
+        @Override
+        public BuilderStep<VALUE> reprocessAndRetryRecordOnRecoveryFailure() {
+            this.restartRetryOnRecoveryFailure = true;
+            return this;
+        }
+
+        @Override
+        public BuilderStep<VALUE> reprocessRecordOnRecoveryFailure() {
+            this.restartRetryOnRecoveryFailure = false;
             return this;
         }
 
         @Override
         public InstanceFlowErrorHandlerConfiguration<VALUE> build() {
-            return new InstanceFlowErrorHandlerConfiguration<>(
-                    consumerRecordValueClass,
-                    backOffFunction,
-                    defaultBackOff,
-                    customRecoverer
-            );
+            return InstanceFlowErrorHandlerConfiguration
+                    .<VALUE>builder()
+                    .backOffFunction(backOffFunction)
+                    .defaultBackoff(defaultBackOff)
+                    .restartRetryOnExceptionChange(restartRetryOnExceptionChange)
+                    .customRecoverer(customRecoverer)
+                    .skipRecordOnRecoveryFailure(skipRecordOnRecoveryFailure)
+                    .restartRetryOnRecoveryFailure(restartRetryOnRecoveryFailure)
+                    .classificationType(classificationType)
+                    .classificationExceptions(classificationExceptions)
+                    .build();
         }
     }
 
