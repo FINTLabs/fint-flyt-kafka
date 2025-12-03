@@ -3,7 +3,9 @@ package no.novari.flyt.kafka.instanceflow.consuming;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import no.novari.kafka.consuming.ErrorHandlerConfiguration;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.util.backoff.BackOff;
@@ -14,6 +16,8 @@ import java.util.function.BiFunction;
 
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
+@ToString
 public class InstanceFlowErrorHandlerConfiguration<VALUE> {
 
     public static <VALUE> InstanceFlowErrorHandlerConfigurationStepBuilder.RetryStep<VALUE> stepBuilder() {
