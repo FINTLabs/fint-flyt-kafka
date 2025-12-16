@@ -35,8 +35,9 @@ dependencyManagement {
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
 
-    api("no.novari:kafka:5.0.0")
+    api("no.novari:kafka:6.0.0")
 
+    implementation("org.springframework.boot:spring-boot-starter-logging")
     implementation("org.apache.logging.log4j:log4j-api")
 
     compileOnly("org.projectlombok:lombok")
@@ -53,6 +54,7 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
 }
 

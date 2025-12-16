@@ -49,40 +49,47 @@ public class InstanceFlowProducerConsumerIntegrationTest {
     }
 
     @Test
-    public void eventTest() throws InterruptedException {
+    public void event() throws InterruptedException {
         CountDownLatch eventCDL = new CountDownLatch(1);
         ArrayList<InstanceFlowConsumerRecord<TestObject>> consumedEvents = new ArrayList<>();
-        var listener = instanceFlowListenerFactoryService.createRecordListenerContainerFactory(
-                TestObject.class,
-                consumerRecord -> {
-                    consumedEvents.add(consumerRecord);
-                    eventCDL.countDown();
-                },
-                ListenerConfiguration
-                        .stepBuilder()
-                        .groupIdApplicationDefault()
-                        .maxPollRecordsKafkaDefault()
-                        .maxPollIntervalKafkaDefault()
-                        .continueFromPreviousOffsetOnAssignment()
-                        .build(),
-                null
-        ).createContainer(EventTopicNameParameters.builder()
-                .topicNamePrefixParameters(
-                        TopicNamePrefixParameters.stepBuilder()
-                                .orgId("test-org-id")
-                                .domainContext("test-domain-context")
-                                .build()
+        var listener = instanceFlowListenerFactoryService
+                .createRecordListenerContainerFactory(
+                        TestObject.class,
+                        consumerRecord -> {
+                            consumedEvents.add(consumerRecord);
+                            eventCDL.countDown();
+                        },
+                        ListenerConfiguration
+                                .stepBuilder()
+                                .groupIdApplicationDefault()
+                                .maxPollRecordsKafkaDefault()
+                                .maxPollIntervalKafkaDefault()
+                                .continueFromPreviousOffsetOnAssignment()
+                                .build(),
+                        null
                 )
-                .eventName("event")
-                .build());
+                .createContainer(EventTopicNameParameters
+                        .builder()
+                        .topicNamePrefixParameters(
+                                TopicNamePrefixParameters
+                                        .stepBuilder()
+                                        .orgId("test-org-id")
+                                        .domainContext("test-domain-context")
+                                        .build()
+                        )
+                        .eventName("event")
+                        .build());
         listener.start();
 
         TestObject testObject = new TestObject(2, "testObjectString");
 
-        InstanceFlowProducerRecord<TestObject> record = InstanceFlowProducerRecord.<TestObject>builder()
-                .topicNameParameters(EventTopicNameParameters.builder()
+        InstanceFlowProducerRecord<TestObject> record = InstanceFlowProducerRecord
+                .<TestObject>builder()
+                .topicNameParameters(EventTopicNameParameters
+                        .builder()
                         .topicNamePrefixParameters(
-                                TopicNamePrefixParameters.stepBuilder()
+                                TopicNamePrefixParameters
+                                        .stepBuilder()
                                         .orgId("test-org-id")
                                         .domainContext("test-domain-context")
                                         .build()
@@ -100,113 +107,154 @@ public class InstanceFlowProducerConsumerIntegrationTest {
         assertTrue(awaitFinished, "The count down latch did not count down to zero within the expected time");
 
         assertEquals(1, consumedEvents.size());
-        assertEquals(createInstanceFlowHeaders(), consumedEvents.getFirst().getInstanceFlowHeaders());
-        assertEquals(testObject, consumedEvents.getFirst().getConsumerRecord().value());
+        assertEquals(
+                createInstanceFlowHeaders(),
+                consumedEvents
+                        .getFirst()
+                        .getInstanceFlowHeaders()
+        );
+        assertEquals(
+                testObject,
+                consumedEvents
+                        .getFirst()
+                        .getConsumerRecord()
+                        .value()
+        );
     }
 
     @Test
-    public void errorEventTest() throws InterruptedException {
+    public void errorEvent() throws InterruptedException {
         CountDownLatch eventCDL = new CountDownLatch(1);
         ArrayList<InstanceFlowConsumerRecord<ErrorCollection>> consumedEvents = new ArrayList<>();
-        var listener = instanceFlowListenerFactoryService.createRecordListenerContainerFactory(
-                ErrorCollection.class,
-                consumerRecord -> {
-                    consumedEvents.add(consumerRecord);
-                    eventCDL.countDown();
-                },
-                ListenerConfiguration
-                        .stepBuilder()
-                        .groupIdApplicationDefault()
-                        .maxPollRecordsKafkaDefault()
-                        .maxPollIntervalKafkaDefault()
-                        .continueFromPreviousOffsetOnAssignment()
-                        .build(),
-                null
-        ).createContainer(ErrorEventTopicNameParameters.builder()
-                .topicNamePrefixParameters(
-                        TopicNamePrefixParameters.stepBuilder()
-                                .orgId("test-org-id")
-                                .domainContext("test-domain-context")
-                                .build()
+        var listener = instanceFlowListenerFactoryService
+                .createRecordListenerContainerFactory(
+                        ErrorCollection.class,
+                        consumerRecord -> {
+                            consumedEvents.add(consumerRecord);
+                            eventCDL.countDown();
+                        },
+                        ListenerConfiguration
+                                .stepBuilder()
+                                .groupIdApplicationDefault()
+                                .maxPollRecordsKafkaDefault()
+                                .maxPollIntervalKafkaDefault()
+                                .continueFromPreviousOffsetOnAssignment()
+                                .build(),
+                        null
                 )
-                .errorEventName("event")
-                .build());
+                .createContainer(ErrorEventTopicNameParameters
+                        .builder()
+                        .topicNamePrefixParameters(
+                                TopicNamePrefixParameters
+                                        .stepBuilder()
+                                        .orgId("test-org-id")
+                                        .domainContext("test-domain-context")
+                                        .build()
+                        )
+                        .errorEventName("event")
+                        .build());
         listener.start();
 
         ErrorCollection errorCollection = new ErrorCollection(List.of(
-                Error.builder()
+                Error
+                        .builder()
                         .errorCode("ERROR_CODE_1")
                         .args(Map.of("arg1", "argValue1", "arg2", "argValue2"))
                         .build(),
-                Error.builder()
+                Error
+                        .builder()
                         .errorCode("ERROR_CODE_2")
                         .args(Map.of("arg1", "argValue1", "arg2", "argValue2"))
                         .build(),
-                Error.builder()
+                Error
+                        .builder()
                         .errorCode("ERROR_CODE_3")
                         .args(Map.of("arg1", "argValue1", "arg2", "argValue2"))
                         .build()
         ));
 
-        InstanceFlowProducerRecord<ErrorCollection> record = InstanceFlowProducerRecord.<ErrorCollection>builder()
-                .topicNameParameters(ErrorEventTopicNameParameters.builder()
+        InstanceFlowProducerRecord<ErrorCollection> record = InstanceFlowProducerRecord
+                .<ErrorCollection>builder()
+                .topicNameParameters(ErrorEventTopicNameParameters
+                        .builder()
                         .topicNamePrefixParameters(
-                                TopicNamePrefixParameters.stepBuilder()
+                                TopicNamePrefixParameters
+                                        .stepBuilder()
                                         .orgId("test-org-id")
                                         .domainContext("test-domain-context")
                                         .build()
-                        ).errorEventName("event")
+                        )
+                        .errorEventName("event")
                         .build())
                 .instanceFlowHeaders(createInstanceFlowHeaders())
                 .value(errorCollection)
                 .build();
 
-        InstanceFlowTemplate<ErrorCollection> template = instanceFlowTemplateFactory.createTemplate(ErrorCollection.class);
+        InstanceFlowTemplate<ErrorCollection> template =
+                instanceFlowTemplateFactory.createTemplate(ErrorCollection.class);
         template.send(record);
 
         boolean awaitFinished = eventCDL.await(10, TimeUnit.SECONDS);
         assertTrue(awaitFinished, "The count down latch did not count down to zero within the expected time");
 
         assertEquals(1, consumedEvents.size());
-        assertEquals(createInstanceFlowHeaders(), consumedEvents.getFirst().getInstanceFlowHeaders());
-        assertEquals(errorCollection, consumedEvents.getFirst().getConsumerRecord().value());
+        assertEquals(
+                createInstanceFlowHeaders(),
+                consumedEvents
+                        .getFirst()
+                        .getInstanceFlowHeaders()
+        );
+        assertEquals(
+                errorCollection,
+                consumedEvents
+                        .getFirst()
+                        .getConsumerRecord()
+                        .value()
+        );
     }
 
     @Test
-    public void entityTest() throws InterruptedException {
+    public void entity() throws InterruptedException {
         CountDownLatch entityCDL = new CountDownLatch(1);
         ArrayList<InstanceFlowConsumerRecord<String>> consumedEntities = new ArrayList<>();
         var entityProducer = instanceFlowTemplateFactory.createTemplate(String.class);
-        var entityConsumer = instanceFlowListenerFactoryService.createRecordListenerContainerFactory(
-                String.class,
-                consumerRecord -> {
-                    consumedEntities.add(consumerRecord);
-                    entityCDL.countDown();
-                },
-                ListenerConfiguration
-                        .stepBuilder()
-                        .groupIdApplicationDefault()
-                        .maxPollRecordsKafkaDefault()
-                        .maxPollIntervalKafkaDefault()
-                        .continueFromPreviousOffsetOnAssignment()
-                        .build(),
-                null
-        ).createContainer(EntityTopicNameParameters.builder()
-                .topicNamePrefixParameters(
-                        TopicNamePrefixParameters.stepBuilder()
-                                .orgId("test-org-id")
-                                .domainContext("test-domain-context")
-                                .build()
+        var entityConsumer = instanceFlowListenerFactoryService
+                .createRecordListenerContainerFactory(
+                        String.class,
+                        consumerRecord -> {
+                            consumedEntities.add(consumerRecord);
+                            entityCDL.countDown();
+                        },
+                        ListenerConfiguration
+                                .stepBuilder()
+                                .groupIdApplicationDefault()
+                                .maxPollRecordsKafkaDefault()
+                                .maxPollIntervalKafkaDefault()
+                                .continueFromPreviousOffsetOnAssignment()
+                                .build(),
+                        null
                 )
-                .resourceName("resource")
-                .build());
+                .createContainer(EntityTopicNameParameters
+                        .builder()
+                        .topicNamePrefixParameters(
+                                TopicNamePrefixParameters
+                                        .stepBuilder()
+                                        .orgId("test-org-id")
+                                        .domainContext("test-domain-context")
+                                        .build()
+                        )
+                        .resourceName("resource")
+                        .build());
         entityConsumer.start();
 
-        InstanceFlowProducerRecord<String> record = InstanceFlowProducerRecord.<String>builder()
+        InstanceFlowProducerRecord<String> record = InstanceFlowProducerRecord
+                .<String>builder()
                 .topicNameParameters(
-                        EntityTopicNameParameters.builder()
+                        EntityTopicNameParameters
+                                .builder()
                                 .topicNamePrefixParameters(
-                                        TopicNamePrefixParameters.stepBuilder()
+                                        TopicNamePrefixParameters
+                                                .stepBuilder()
                                                 .orgId("test-org-id")
                                                 .domainContext("test-domain-context")
                                                 .build()
@@ -224,12 +272,24 @@ public class InstanceFlowProducerConsumerIntegrationTest {
         assertTrue(awaitFinished, "The count down latch did not count down to zero within the expected time");
 
         assertEquals(1, consumedEntities.size());
-        assertEquals(createInstanceFlowHeaders(), consumedEntities.getFirst().getInstanceFlowHeaders());
-        assertEquals("valueString", consumedEntities.getFirst().getConsumerRecord().value());
+        assertEquals(
+                createInstanceFlowHeaders(),
+                consumedEntities
+                        .getFirst()
+                        .getInstanceFlowHeaders()
+        );
+        assertEquals(
+                "valueString",
+                consumedEntities
+                        .getFirst()
+                        .getConsumerRecord()
+                        .value()
+        );
     }
 
     private InstanceFlowHeaders createInstanceFlowHeaders() {
-        return InstanceFlowHeaders.builder()
+        return InstanceFlowHeaders
+                .builder()
                 .sourceApplicationId(1L)
                 .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
                 .sourceApplicationInstanceId("sourceApplicationInstanceId")
