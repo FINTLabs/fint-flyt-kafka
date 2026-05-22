@@ -1,0 +1,39 @@
+package no.novari.flyt.kafka.instanceflow.producing
+
+import no.novari.flyt.kafka.instanceflow.headers.InstanceFlowHeaders
+import no.novari.kafka.topic.name.TopicNameParameters
+
+data class InstanceFlowProducerRecord<V>(
+    val topicNameParameters: TopicNameParameters?,
+    val instanceFlowHeaders: InstanceFlowHeaders?,
+    val key: String?,
+    val value: V?,
+) {
+    class Builder<V> internal constructor() {
+        private var topicNameParameters: TopicNameParameters? = null
+        private var instanceFlowHeaders: InstanceFlowHeaders? = null
+        private var key: String? = null
+        private var value: V? = null
+
+        fun topicNameParameters(params: TopicNameParameters?) = apply { this.topicNameParameters = params }
+
+        fun instanceFlowHeaders(headers: InstanceFlowHeaders?) = apply { this.instanceFlowHeaders = headers }
+
+        fun key(key: String?) = apply { this.key = key }
+
+        fun value(value: V?) = apply { this.value = value }
+
+        fun build(): InstanceFlowProducerRecord<V> =
+            InstanceFlowProducerRecord(
+                topicNameParameters = topicNameParameters,
+                instanceFlowHeaders = instanceFlowHeaders,
+                key = key,
+                value = value,
+            )
+    }
+
+    companion object {
+        @JvmStatic
+        fun <V> builder(): Builder<V> = Builder()
+    }
+}

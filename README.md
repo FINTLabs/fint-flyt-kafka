@@ -46,10 +46,11 @@ dependencies {
 }
 ```
 
-### Plattformkrav for gjeldende major (`v6`)
+### Plattformkrav for gjeldende major (`v7`)
 
 - Java `25`
-- Gradle wrapper `9.3.1` dersom du bygger biblioteket selv
+- Kotlin `2.3.10` (biblioteket er skrevet i Kotlin; Java-applikasjoner kan fortsatt bruke det)
+- Gradle wrapper `9.1.0` dersom du bygger biblioteket selv
 - underliggende Kafka-bibliotek: `no.novari:kafka:6.0.0`
 
 ### Spring-oppsett
@@ -465,3 +466,4 @@ Major-guider ligger her:
 - [v3 -> v4](docs/upgrading/v3-to-v4.md)
 - [v4 -> v5](docs/upgrading/v4-to-v5.md)
 - [v5 -> v6](docs/upgrading/v5-to-v6.md)
+- [v6 -> v7](docs/upgrading/v6-to-v7.md)
