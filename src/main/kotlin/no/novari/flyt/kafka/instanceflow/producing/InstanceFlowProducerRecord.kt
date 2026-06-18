@@ -9,6 +9,10 @@ data class InstanceFlowProducerRecord<V>(
     val key: String?,
     val value: V?,
 ) {
+    // Matches the Java v6 behaviour (no @ToString) so that the producer record payload is
+    // not exposed through default logging of the data class.
+    override fun toString(): String = "${javaClass.name}@${Integer.toHexString(hashCode())}"
+
     class Builder<V> internal constructor() {
         private var topicNameParameters: TopicNameParameters? = null
         private var instanceFlowHeaders: InstanceFlowHeaders? = null

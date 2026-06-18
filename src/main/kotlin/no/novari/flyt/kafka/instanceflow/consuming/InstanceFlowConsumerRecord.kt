@@ -7,6 +7,10 @@ data class InstanceFlowConsumerRecord<T>(
     val instanceFlowHeaders: InstanceFlowHeaders?,
     val consumerRecord: ConsumerRecord<String, T>?,
 ) {
+    // Matches the Java v6 behaviour (no @ToString) so that the consumer record payload is
+    // not exposed through default logging of the data class.
+    override fun toString(): String = "${javaClass.name}@${Integer.toHexString(hashCode())}"
+
     class Builder<T> internal constructor() {
         private var instanceFlowHeaders: InstanceFlowHeaders? = null
         private var consumerRecord: ConsumerRecord<String, T>? = null
