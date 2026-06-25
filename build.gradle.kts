@@ -1,13 +1,14 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.gradle.kotlin.dsl.named
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id("org.springframework.boot") version "3.5.10" apply false
-    id("io.spring.dependency-management") version "1.1.7"
+    id("org.springframework.boot") version "3.5.15" apply false
     id("java-library")
     id("maven-publish")
-    id("com.github.ben-manes.versions") version "0.53.0"
+    id("com.github.ben-manes.versions") version "0.54.0"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
+    kotlin("jvm") version "2.4.0"
+    kotlin("plugin.spring") version "2.4.0"
 }
 
 group = "no.novari"
@@ -20,48 +21,52 @@ java {
     withSourcesJar()
 }
 
+kotlin {
+    jvmToolchain(25)
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
+}
+
 repositories {
-    mavenLocal()
+    mavenCentral()
     maven {
         url = uri("https://repo.fintlabs.no/releases")
     }
-    mavenCentral()
-}
-
-dependencyManagement {
-    imports {
-        mavenBom(SpringBootPlugin.BOM_COORDINATES)
-    }
+    mavenLocal()
 }
 
 dependencies {
+    api(platform(SpringBootPlugin.BOM_COORDINATES))
+
+    api("no.novari:kafka:6.1.0")
+    api("com.fasterxml.jackson.module:jackson-module-kotlin")
+    api("org.jetbrains.kotlin:kotlin-reflect")
+
     implementation("com.fasterxml.jackson.core:jackson-databind")
-
-    api("no.novari:kafka:6.0.0")
-
     implementation("org.springframework.boot:spring-boot-starter-logging")
     implementation("org.apache.logging.log4j:log4j-api")
 
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    annotationProcessor("org.projectlombok:lombok")
-
-    testImplementation("io.projectreactor:reactor-test")
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.springframework.boot:spring-boot-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
-
-    testImplementation("org.mockito:mockito-core:5.21.0")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.21.0")
+    testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.2.3")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.kafka:spring-kafka-test")
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+ktlint {
+    version.set("1.8.0")
+}
+
+tasks.named("check") {
+    dependsOn("ktlintCheck")
 }
 
 publishing {

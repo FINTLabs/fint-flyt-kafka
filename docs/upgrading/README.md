@@ -15,12 +15,14 @@ Denne mappen inneholder oppgraderingsguider per major-hopp.
 | `v3` | `v4` | [`v3-to-v4.md`](v3-to-v4.md) |
 | `v4` | `v5` | [`v4-to-v5.md`](v4-to-v5.md) |
 | `v5` | `v6` | [`v5-to-v6.md`](v5-to-v6.md) |
+| `v6` | `v7` | [`v6-to-v7.md`](v6-to-v7.md) |
 
 Fotnoter (eksakte tagger):
 
 - `v3 -> v4`: `v3.1.2 -> v4.0.0`
 - `v4 -> v5`: `v4.0.0 -> v5.0.0`
 - `v5 -> v6`: `v5.0.0 -> v6.0.0`
+- `v6 -> v7`: `v6.0.0 -> v7.0.0`
 
 ## Hvordan legge til ny major-guide (v7, v8, ...)
 
