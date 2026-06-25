@@ -98,7 +98,7 @@ class InstanceFlowProducerConsumerIntegrationTest(
 
         assertEquals(1, consumedEvents.size)
         assertEquals(createInstanceFlowHeaders(), consumedEvents.first().instanceFlowHeaders)
-        assertEquals(testObject, consumedEvents.first().consumerRecord?.value())
+        assertEquals(testObject, consumedEvents.first().consumerRecord.value())
     }
 
     @Test
@@ -185,7 +185,7 @@ class InstanceFlowProducerConsumerIntegrationTest(
 
         assertEquals(1, consumedEvents.size)
         assertEquals(createInstanceFlowHeaders(), consumedEvents.first().instanceFlowHeaders)
-        assertEquals(errorCollection, consumedEvents.first().consumerRecord?.value())
+        assertEquals(errorCollection, consumedEvents.first().consumerRecord.value())
     }
 
     @Test
@@ -248,7 +248,7 @@ class InstanceFlowProducerConsumerIntegrationTest(
 
         assertEquals(1, consumedEntities.size)
         assertEquals(createInstanceFlowHeaders(), consumedEntities.first().instanceFlowHeaders)
-        assertEquals("valueString", consumedEntities.first().consumerRecord?.value())
+        assertEquals("valueString", consumedEntities.first().consumerRecord.value())
     }
 
     private fun createInstanceFlowHeaders(): InstanceFlowHeaders =

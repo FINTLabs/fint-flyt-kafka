@@ -4,8 +4,8 @@ import no.novari.flyt.kafka.instanceflow.headers.InstanceFlowHeaders
 import org.apache.kafka.clients.consumer.ConsumerRecord
 
 data class InstanceFlowConsumerRecord<T>(
-    val instanceFlowHeaders: InstanceFlowHeaders?,
-    val consumerRecord: ConsumerRecord<String, T>?,
+    val instanceFlowHeaders: InstanceFlowHeaders,
+    val consumerRecord: ConsumerRecord<String, T>,
 ) {
     // Matches the Java v6 behaviour (no @ToString) so that the consumer record payload is
     // not exposed through default logging of the data class.
@@ -21,8 +21,12 @@ data class InstanceFlowConsumerRecord<T>(
 
         fun build(): InstanceFlowConsumerRecord<T> =
             InstanceFlowConsumerRecord(
-                instanceFlowHeaders = instanceFlowHeaders,
-                consumerRecord = consumerRecord,
+                instanceFlowHeaders =
+                    instanceFlowHeaders
+                        ?: throw NullPointerException("instanceFlowHeaders is marked non-null but is null"),
+                consumerRecord =
+                    consumerRecord
+                        ?: throw NullPointerException("consumerRecord is marked non-null but is null"),
             )
     }
 

@@ -4,8 +4,8 @@ import no.novari.flyt.kafka.instanceflow.headers.InstanceFlowHeaders
 import no.novari.kafka.topic.name.TopicNameParameters
 
 data class InstanceFlowProducerRecord<V>(
-    val topicNameParameters: TopicNameParameters?,
-    val instanceFlowHeaders: InstanceFlowHeaders?,
+    val topicNameParameters: TopicNameParameters,
+    val instanceFlowHeaders: InstanceFlowHeaders,
     val key: String?,
     val value: V?,
 ) {
@@ -29,8 +29,12 @@ data class InstanceFlowProducerRecord<V>(
 
         fun build(): InstanceFlowProducerRecord<V> =
             InstanceFlowProducerRecord(
-                topicNameParameters = topicNameParameters,
-                instanceFlowHeaders = instanceFlowHeaders,
+                topicNameParameters =
+                    topicNameParameters
+                        ?: throw NullPointerException("topicNameParameters is marked non-null but is null"),
+                instanceFlowHeaders =
+                    instanceFlowHeaders
+                        ?: throw NullPointerException("instanceFlowHeaders is marked non-null but is null"),
                 key = key,
                 value = value,
             )
