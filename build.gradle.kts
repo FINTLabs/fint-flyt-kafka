@@ -2,7 +2,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id("org.springframework.boot") version "3.5.15" apply false
+    id("org.springframework.boot") version "3.5.16" apply false
     id("java-library")
     id("maven-publish")
     id("com.github.ben-manes.versions") version "0.54.0"
@@ -39,7 +39,7 @@ repositories {
 dependencies {
     api(platform(SpringBootPlugin.BOM_COORDINATES))
 
-    api("no.novari:kafka:6.1.0")
+    api("no.novari:kafka:6.2.0")
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
