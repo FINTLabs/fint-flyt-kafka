@@ -39,7 +39,7 @@ repositories {
 dependencies {
     api(platform(SpringBootPlugin.BOM_COORDINATES))
 
-    api("no.novari:kafka:6.3.0-rc-1")
+    api("no.novari:kafka:6.3.0-rc-2")
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
     api("org.jetbrains.kotlin:kotlin-reflect")
     api("io.micrometer:micrometer-observation")

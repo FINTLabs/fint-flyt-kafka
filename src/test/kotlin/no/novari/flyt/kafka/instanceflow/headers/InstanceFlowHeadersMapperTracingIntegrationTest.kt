@@ -29,13 +29,13 @@ import java.util.concurrent.TimeUnit
 /**
  * Verifiserer FFS-2222: instansflytens `correlationId` legges som high-cardinality span-attributt
  * (`flyt.correlation-id`) på det aktive sporet der instansflyt-headerne leses og skrives, når
- * `fint.kafka.tracing.enabled=true`.
+ * `novari.kafka.tracing.enabled=true`.
  */
 @SpringBootTest(
     properties = [
         "management.tracing.sampling.probability=1.0",
         "spring.kafka.consumer.auto-offset-reset=earliest",
-        "fint.kafka.tracing.enabled=true",
+        "novari.kafka.tracing.enabled=true",
     ],
 )
 @EmbeddedKafka(partitions = 1, kraft = true)
