@@ -39,9 +39,10 @@ repositories {
 dependencies {
     api(platform(SpringBootPlugin.BOM_COORDINATES))
 
-    api("no.novari:kafka:6.2.0")
+    api("no.novari:kafka:6.3.0-rc-1")
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
     api("org.jetbrains.kotlin:kotlin-reflect")
+    api("io.micrometer:micrometer-observation")
 
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("org.springframework.boot:spring-boot-starter-logging")
@@ -50,9 +51,12 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-actuator")
     testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.2.3")
+    testImplementation("io.micrometer:micrometer-tracing-bridge-otel")
+    testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
