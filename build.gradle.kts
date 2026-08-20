@@ -36,11 +36,10 @@ repositories {
     mavenLocal()
 }
 
-extra["jackson-bom.version"] = "2.21.5"
-extra["log4j2.version"] = "2.25.5"
-extra["netty.version"] = "4.1.137.Final"
-
 dependencies {
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.25.5"))
+    implementation(platform("io.netty:netty-bom:4.1.137.Final"))
     api(platform(SpringBootPlugin.BOM_COORDINATES))
 
     api("no.novari:kafka:6.2.0")
