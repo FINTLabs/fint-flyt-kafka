@@ -38,15 +38,15 @@ repositories {
 
 dependencies {
     constraints {
-        ktlint("ch.qos.logback:logback-core:1.5.34")
+        ktlint("ch.qos.logback:logback-core:1.6.3")
         implementation("at.yawk.lz4:lz4-java:1.11.2") {
             because("Fixes CVE-2026-59949 in the kafka-clients transitive dependency")
         }
     }
 
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
-    implementation(platform("org.apache.logging.log4j:log4j-bom:2.25.5"))
-    implementation(platform("io.netty:netty-bom:4.1.137.Final"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.2"))
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.26.1"))
+    implementation(platform("io.netty:netty-bom:4.2.17.Final"))
     api(platform(SpringBootPlugin.BOM_COORDINATES))
 
     api("no.novari:kafka:6.2.0")
