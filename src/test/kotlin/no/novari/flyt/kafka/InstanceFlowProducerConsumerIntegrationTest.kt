@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.TestConstructor
+import java.nio.charset.StandardCharsets
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -98,6 +99,82 @@ class InstanceFlowProducerConsumerIntegrationTest(
 
         assertEquals(1, consumedEvents.size)
         assertEquals(createInstanceFlowHeaders(), consumedEvents.first().instanceFlowHeaders)
+        assertEquals(testObject, consumedEvents.first().consumerRecord.value())
+    }
+
+    @Test
+    fun `event roundtrips through Kafka with additional headers preserved`() {
+        val eventCDL = CountDownLatch(1)
+        val consumedEvents = mutableListOf<InstanceFlowConsumerRecord<TestObject>>()
+        val listener =
+            instanceFlowListenerFactoryService
+                .createRecordListenerContainerFactory(
+                    TestObject::class.java,
+                    { consumerRecord ->
+                        consumedEvents.add(consumerRecord)
+                        eventCDL.countDown()
+                    },
+                    ListenerConfiguration
+                        .stepBuilder()
+                        .groupIdApplicationDefault()
+                        .maxPollRecordsKafkaDefault()
+                        .maxPollIntervalKafkaDefault()
+                        .continueFromPreviousOffsetOnAssignment()
+                        .build(),
+                    null,
+                ).createContainer(
+                    EventTopicNameParameters
+                        .builder()
+                        .topicNamePrefixParameters(
+                            TopicNamePrefixParameters
+                                .stepBuilder()
+                                .orgId("test-org-id")
+                                .domainContext("test-domain-context")
+                                .build(),
+                        ).eventName("event-with-additional-headers")
+                        .build(),
+                )
+        listener.start()
+
+        val testObject = TestObject(3, "testObjectWithHeader")
+        val actorHeaderValue = """{"type":"USER","oid":"2ee6f95e-44c3-11ed-b878-0242ac120002"}"""
+        val record =
+            InstanceFlowProducerRecord
+                .builder<TestObject>()
+                .topicNameParameters(
+                    EventTopicNameParameters
+                        .builder()
+                        .topicNamePrefixParameters(
+                            TopicNamePrefixParameters
+                                .stepBuilder()
+                                .orgId("test-org-id")
+                                .domainContext("test-domain-context")
+                                .build(),
+                        ).eventName("event-with-additional-headers")
+                        .build(),
+                ).instanceFlowHeaders(createInstanceFlowHeaders())
+                .additionalHeader(
+                    "flyt.actor",
+                    actorHeaderValue.toByteArray(StandardCharsets.UTF_8),
+                ).value(testObject)
+                .build()
+
+        val template = instanceFlowTemplateFactory.createTemplate(TestObject::class.java)
+        template.send(record)
+
+        val awaitFinished = eventCDL.await(10, TimeUnit.SECONDS)
+        assertTrue(awaitFinished, "The count down latch did not count down to zero within the expected time")
+
+        assertEquals(1, consumedEvents.size)
+        assertEquals(createInstanceFlowHeaders(), consumedEvents.first().instanceFlowHeaders)
+        val consumedActorHeader =
+            consumedEvents
+                .first()
+                .consumerRecord
+                .headers()
+                .lastHeader("flyt.actor")
+                .value()
+        assertEquals(actorHeaderValue, String(consumedActorHeader, StandardCharsets.UTF_8))
         assertEquals(testObject, consumedEvents.first().consumerRecord.value())
     }
 

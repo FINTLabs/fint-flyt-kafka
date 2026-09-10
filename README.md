@@ -5,6 +5,7 @@
 Et Spring Boot-bibliotek for Kafka-basert Flyt-integrasjon som bygger videre på `no.novari:kafka` og legger til:
 
 - serialisering av `InstanceFlowHeaders` i Kafka-headeren `flyt.instance-flow-headers`
+- støtte for eksplisitte ekstra Kafka record-headere på producer-siden
 - type-safe wrappers for producing og consuming med instance flow headers
 - error-handler-oppsett som arbeider med `InstanceFlowConsumerRecord`
 - modellklasser for error-event payloads (`Error`, `ErrorCollection`)
@@ -162,6 +163,10 @@ Mapperen oppfører seg slik:
 - ugyldig header-innhold gir `CouldNotReadInstanceFlowHeadersException`
 - serialiseringsfeil ved produksjon gir `CouldNotWriteInstanceFlowHeadersException`
 
+`InstanceFlowProducerRecord` kan i tillegg bære eksplisitte ekstra record-headere. Disse er ment for
+smale kontrakter utenfor `InstanceFlowHeaders`, for eksempel sporbarhets-headere som bare gjelder én
+hendelsestype. Ekstra headere endrer ikke `InstanceFlowHeaders`-kontrakten.
+
 ## Producere
 
 ### Hoved-API
@@ -193,6 +198,8 @@ public class EventPublisher {
     }
 
     public void publish(MyEvent event, UUID correlationId) {
+        byte[] actorHeaderValue = resolveActorHeaderValue();
+
         template.send(
                 InstanceFlowProducerRecord.<MyEvent>builder()
                         .topicNameParameters(
@@ -213,6 +220,7 @@ public class EventPublisher {
                                         .correlationId(correlationId)
                                         .build()
                         )
+                        .additionalHeader("flyt.actor", actorHeaderValue)
                         .value(event)
                         .build()
         );

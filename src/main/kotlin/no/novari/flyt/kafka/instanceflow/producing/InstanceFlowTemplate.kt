@@ -3,6 +3,7 @@ package no.novari.flyt.kafka.instanceflow.producing
 import no.novari.flyt.kafka.instanceflow.headers.InstanceFlowHeadersMapper
 import no.novari.kafka.producing.ParameterizedProducerRecord
 import no.novari.kafka.producing.ParameterizedTemplate
+import org.apache.kafka.common.header.internals.RecordHeaders
 import org.springframework.kafka.support.SendResult
 import java.util.concurrent.CompletableFuture
 
@@ -12,14 +13,19 @@ data class InstanceFlowTemplate<VALUE>(
 ) {
     fun send(
         instanceFlowProducerRecord: InstanceFlowProducerRecord<VALUE>,
-    ): CompletableFuture<SendResult<String, VALUE>> =
-        parameterizedTemplate.send(
+    ): CompletableFuture<SendResult<String, VALUE>> {
+        val headers =
+            RecordHeaders(instanceFlowProducerRecord.additionalHeaders)
+                .add(instanceFlowHeadersMapper.toHeader(instanceFlowProducerRecord.instanceFlowHeaders))
+
+        return parameterizedTemplate.send(
             ParameterizedProducerRecord
                 .builder<VALUE>()
                 .topicNameParameters(instanceFlowProducerRecord.topicNameParameters)
-                .headers(instanceFlowHeadersMapper.toHeaders(instanceFlowProducerRecord.instanceFlowHeaders))
+                .headers(headers)
                 .key(instanceFlowProducerRecord.key)
                 .value(instanceFlowProducerRecord.value)
                 .build(),
         )
+    }
 }
