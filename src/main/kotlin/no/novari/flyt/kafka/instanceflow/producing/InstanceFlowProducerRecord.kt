@@ -1,5 +1,6 @@
 package no.novari.flyt.kafka.instanceflow.producing
 
+import no.novari.flyt.kafka.instanceflow.headers.INSTANCE_FLOW_HEADERS_KEY
 import no.novari.flyt.kafka.instanceflow.headers.InstanceFlowHeaders
 import no.novari.kafka.topic.name.TopicNameParameters
 import org.apache.kafka.common.header.Header
@@ -12,27 +13,8 @@ data class InstanceFlowProducerRecord<V>(
     val instanceFlowHeaders: InstanceFlowHeaders,
     val key: String?,
     val value: V?,
+    val additionalHeaders: Headers = RecordHeaders().apply { setReadOnly() },
 ) {
-    private var mutableAdditionalHeaders: Headers = RecordHeaders()
-
-    val additionalHeaders: Headers
-        get() = mutableAdditionalHeaders
-
-    constructor(
-        topicNameParameters: TopicNameParameters,
-        instanceFlowHeaders: InstanceFlowHeaders,
-        key: String?,
-        value: V?,
-        additionalHeaders: Headers?,
-    ) : this(
-        topicNameParameters = topicNameParameters,
-        instanceFlowHeaders = instanceFlowHeaders,
-        key = key,
-        value = value,
-    ) {
-        mutableAdditionalHeaders = copyAdditionalHeaders(additionalHeaders)
-    }
-
     // Matches the Java v6 behaviour (no @ToString) so that the producer record payload is
     // not exposed through default logging of the data class.
     override fun toString(): String = "${javaClass.name}@${Integer.toHexString(hashCode())}"
@@ -50,13 +32,19 @@ data class InstanceFlowProducerRecord<V>(
 
         fun additionalHeader(header: Header?) =
             apply {
-                header?.let { additionalHeaders.add(it) }
+                header?.let {
+                    validateAdditionalHeaderKey(it.key())
+                    additionalHeaders.add(it)
+                }
             }
 
         fun additionalHeader(
             key: String,
             value: ByteArray?,
-        ) = additionalHeader(RecordHeader(key, value))
+        ) = apply {
+            validateAdditionalHeaderKey(key)
+            value?.let { additionalHeaders.add(RecordHeader(key, it)) }
+        }
 
         fun key(key: String?) = apply { this.key = key }
 
@@ -72,7 +60,7 @@ data class InstanceFlowProducerRecord<V>(
                         ?: throw NullPointerException("instanceFlowHeaders is marked non-null but is null"),
                 key = key,
                 value = value,
-                additionalHeaders = additionalHeaders,
+                additionalHeaders = RecordHeaders(additionalHeaders).apply { setReadOnly() },
             )
     }
 
@@ -80,11 +68,10 @@ data class InstanceFlowProducerRecord<V>(
         @JvmStatic
         fun <V> builder(): Builder<V> = Builder()
 
-        private fun copyAdditionalHeaders(headers: Headers?): Headers =
-            if (headers == null) {
-                RecordHeaders()
-            } else {
-                RecordHeaders(headers)
+        private fun validateAdditionalHeaderKey(key: String) {
+            require(key != INSTANCE_FLOW_HEADERS_KEY) {
+                "Header key '$INSTANCE_FLOW_HEADERS_KEY' is reserved for InstanceFlowHeaders"
             }
+        }
     }
 }

@@ -157,7 +157,7 @@ To felter er eksplisitt påkrevde i modellen:
 
 Mapperen oppfører seg slik:
 
-- producer-side: `InstanceFlowHeadersMapper.toHeaders(...)` serialiserer objektet til JSON i Kafka-header
+- producer-side: `InstanceFlowHeadersMapper.toHeader(...)` serialiserer objektet til JSON i Kafka-header
 - consumer-side: `InstanceFlowHeadersMapper.getInstanceFlowHeaders(...)` leser headeren tilbake til `InstanceFlowHeaders`
 - manglende header gir `NoInstanceFlowHeadersException`
 - ugyldig header-innhold gir `CouldNotReadInstanceFlowHeadersException`
@@ -187,6 +187,7 @@ import no.novari.flyt.kafka.instanceflow.producing.InstanceFlowTemplateFactory;
 import no.novari.kafka.topic.name.EventTopicNameParameters;
 import no.novari.kafka.topic.name.TopicNamePrefixParameters;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class EventPublisher {
@@ -198,7 +199,7 @@ public class EventPublisher {
     }
 
     public void publish(MyEvent event, UUID correlationId) {
-        byte[] actorHeaderValue = resolveActorHeaderValue();
+        byte[] contractHeaderValue = "adapter-health-v1".getBytes(StandardCharsets.UTF_8);
 
         template.send(
                 InstanceFlowProducerRecord.<MyEvent>builder()
@@ -220,13 +221,16 @@ public class EventPublisher {
                                         .correlationId(correlationId)
                                         .build()
                         )
-                        .additionalHeader("flyt.actor", actorHeaderValue)
+                        .additionalHeader("adapter-health.contract", contractHeaderValue)
                         .value(event)
                         .build()
         );
     }
 }
 ```
+
+FLYT-aktørheaderen eies av `flyt-audit-starter`; bruk `ActorHeader`-kontrakten derfra når en
+produsent skal sende aktørinformasjon.
 
 ### Hvilke topic-typer kan brukes
 

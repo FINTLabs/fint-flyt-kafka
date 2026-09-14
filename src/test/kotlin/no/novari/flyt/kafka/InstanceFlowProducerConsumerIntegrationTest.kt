@@ -138,6 +138,7 @@ class InstanceFlowProducerConsumerIntegrationTest(
 
         val testObject = TestObject(3, "testObjectWithHeader")
         val actorHeaderValue = """{"type":"USER","oid":"2ee6f95e-44c3-11ed-b878-0242ac120002"}"""
+        val contractHeaderValue = "adapter-health-v1"
         val record =
             InstanceFlowProducerRecord
                 .builder<TestObject>()
@@ -156,6 +157,9 @@ class InstanceFlowProducerConsumerIntegrationTest(
                 .additionalHeader(
                     "flyt.actor",
                     actorHeaderValue.toByteArray(StandardCharsets.UTF_8),
+                ).additionalHeader(
+                    "adapter-health.contract",
+                    contractHeaderValue.toByteArray(StandardCharsets.UTF_8),
                 ).value(testObject)
                 .build()
 
@@ -167,14 +171,21 @@ class InstanceFlowProducerConsumerIntegrationTest(
 
         assertEquals(1, consumedEvents.size)
         assertEquals(createInstanceFlowHeaders(), consumedEvents.first().instanceFlowHeaders)
-        val consumedActorHeader =
+        val consumedHeaders =
             consumedEvents
                 .first()
                 .consumerRecord
                 .headers()
+        val consumedActorHeader =
+            consumedHeaders
                 .lastHeader("flyt.actor")
                 .value()
+        val consumedContractHeader =
+            consumedHeaders
+                .lastHeader("adapter-health.contract")
+                .value()
         assertEquals(actorHeaderValue, String(consumedActorHeader, StandardCharsets.UTF_8))
+        assertEquals(contractHeaderValue, String(consumedContractHeader, StandardCharsets.UTF_8))
         assertEquals(testObject, consumedEvents.first().consumerRecord.value())
     }
 
