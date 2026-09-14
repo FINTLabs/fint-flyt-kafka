@@ -22,8 +22,8 @@ plugins {
     id("maven-publish")
     id("io.github.ben-manes.versions") version "0.61.0"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    kotlin("jvm") version "2.4.10"
-    kotlin("plugin.spring") version "2.4.10"
+    kotlin("jvm") version "2.4.20"
+    kotlin("plugin.spring") version "2.4.20"
 }
 
 group = "no.novari"
@@ -61,7 +61,7 @@ dependencies {
 
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.2"))
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.26.1"))
-    implementation(platform("io.netty:netty-bom:4.2.17.Final"))
+    implementation(platform("io.netty:netty-bom:4.2.18.Final"))
     api(platform(SpringBootPlugin.BOM_COORDINATES))
 
     api("no.novari:kafka:6.2.0")
