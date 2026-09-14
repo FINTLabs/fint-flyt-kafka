@@ -5,6 +5,7 @@
 Et Spring Boot-bibliotek for Kafka-basert Flyt-integrasjon som bygger videre på `no.novari:kafka` og legger til:
 
 - serialisering av `InstanceFlowHeaders` i Kafka-headeren `flyt.instance-flow-headers`
+- støtte for eksplisitte ekstra Kafka record-headere på producer-siden
 - type-safe wrappers for producing og consuming med instance flow headers
 - error-handler-oppsett som arbeider med `InstanceFlowConsumerRecord`
 - modellklasser for error-event payloads (`Error`, `ErrorCollection`)
@@ -156,11 +157,15 @@ To felter er eksplisitt påkrevde i modellen:
 
 Mapperen oppfører seg slik:
 
-- producer-side: `InstanceFlowHeadersMapper.toHeaders(...)` serialiserer objektet til JSON i Kafka-header
+- producer-side: `InstanceFlowHeadersMapper.toHeader(...)` serialiserer objektet til JSON i Kafka-header
 - consumer-side: `InstanceFlowHeadersMapper.getInstanceFlowHeaders(...)` leser headeren tilbake til `InstanceFlowHeaders`
 - manglende header gir `NoInstanceFlowHeadersException`
 - ugyldig header-innhold gir `CouldNotReadInstanceFlowHeadersException`
 - serialiseringsfeil ved produksjon gir `CouldNotWriteInstanceFlowHeadersException`
+
+`InstanceFlowProducerRecord` kan i tillegg bære eksplisitte ekstra record-headere. Disse er ment for
+smale kontrakter utenfor `InstanceFlowHeaders`, for eksempel sporbarhets-headere som bare gjelder én
+hendelsestype. Ekstra headere endrer ikke `InstanceFlowHeaders`-kontrakten.
 
 ## Producere
 
@@ -182,6 +187,7 @@ import no.novari.flyt.kafka.instanceflow.producing.InstanceFlowTemplateFactory;
 import no.novari.kafka.topic.name.EventTopicNameParameters;
 import no.novari.kafka.topic.name.TopicNamePrefixParameters;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class EventPublisher {
@@ -193,6 +199,8 @@ public class EventPublisher {
     }
 
     public void publish(MyEvent event, UUID correlationId) {
+        byte[] contractHeaderValue = "adapter-health-v1".getBytes(StandardCharsets.UTF_8);
+
         template.send(
                 InstanceFlowProducerRecord.<MyEvent>builder()
                         .topicNameParameters(
@@ -213,12 +221,16 @@ public class EventPublisher {
                                         .correlationId(correlationId)
                                         .build()
                         )
+                        .additionalHeader("adapter-health.contract", contractHeaderValue)
                         .value(event)
                         .build()
         );
     }
 }
 ```
+
+FLYT-aktørheaderen eies av `flyt-audit-starter`; bruk `ActorHeader`-kontrakten derfra når en
+produsent skal sende aktørinformasjon.
 
 ### Hvilke topic-typer kan brukes
 

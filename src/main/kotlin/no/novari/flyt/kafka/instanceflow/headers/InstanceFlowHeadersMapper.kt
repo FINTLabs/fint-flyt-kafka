@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.common.header.Header
 import org.apache.kafka.common.header.Headers
 import org.apache.kafka.common.header.internals.RecordHeader
-import org.apache.kafka.common.header.internals.RecordHeaders
 import org.springframework.stereotype.Service
 import java.io.IOException
+
+internal const val INSTANCE_FLOW_HEADERS_KEY = "flyt.instance-flow-headers"
 
 @Service
 class InstanceFlowHeadersMapper(
@@ -24,9 +25,6 @@ class InstanceFlowHeadersMapper(
         }
     }
 
-    fun toHeaders(instanceFlowHeaders: InstanceFlowHeaders?): Headers =
-        RecordHeaders().add(toHeader(instanceFlowHeaders))
-
     fun getInstanceFlowHeaders(headers: Headers): InstanceFlowHeaders {
         val header = headers.lastHeader(INSTANCE_FLOW_HEADERS_KEY) ?: throw NoInstanceFlowHeadersException()
         return toInstanceFlowHeaders(header)
@@ -38,8 +36,4 @@ class InstanceFlowHeadersMapper(
         } catch (_: IOException) {
             throw CouldNotReadInstanceFlowHeadersException(header)
         }
-
-    companion object {
-        private const val INSTANCE_FLOW_HEADERS_KEY = "flyt.instance-flow-headers"
-    }
 }
