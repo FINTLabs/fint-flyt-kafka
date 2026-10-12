@@ -8,7 +8,7 @@ buildscript {
     dependencies {
         classpath(platform("com.fasterxml.jackson:jackson-bom:2.22.3"))
         constraints {
-            classpath("org.apache.httpcomponents.client5:httpclient5:5.6.4")
+            classpath("org.apache.httpcomponents.client5:httpclient5:5.6.5")
             classpath("org.apache.httpcomponents.core5:httpcore5:5.4.4")
             classpath("org.apache.httpcomponents.core5:httpcore5-h2:5.4.4")
             classpath("org.apache.commons:commons-lang3:3.21.0")
@@ -20,7 +20,7 @@ plugins {
     id("org.springframework.boot") version "3.5.16" apply false
     id("java-library")
     id("maven-publish")
-    id("io.github.ben-manes.versions") version "0.64.0"
+    id("io.github.ben-manes.versions") version "0.65.0"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     kotlin("jvm") version "2.4.10"
     kotlin("plugin.spring") version "2.4.10"
@@ -61,7 +61,7 @@ dependencies {
 
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.3"))
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.26.1"))
-    implementation(platform("io.netty:netty-bom:4.2.18.Final"))
+    implementation(platform("io.netty:netty-bom:4.2.19.Final"))
     api(platform(SpringBootPlugin.BOM_COORDINATES))
 
     api("no.novari:kafka:6.2.0")
