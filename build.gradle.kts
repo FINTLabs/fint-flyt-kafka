@@ -2,7 +2,6 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 buildscript {
-    configurations.classpath { resolutionStrategy.activateDependencyLocking() }
     repositories {
         gradlePluginPortal()
     }
