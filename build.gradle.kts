@@ -86,7 +86,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
     testImplementation("org.springframework.kafka:spring-kafka-test")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:6.4.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
