@@ -73,7 +73,7 @@ dependencies {
     implementation(platform("io.netty:netty-bom:4.2.19.Final"))
     api(platform(SpringBootPlugin.BOM_COORDINATES))
 
-    api("no.novari:kafka:6.2.0")
+    api("no.novari:kafka:6.3.0")
     api("com.fasterxml.jackson.module:jackson-module-kotlin")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
