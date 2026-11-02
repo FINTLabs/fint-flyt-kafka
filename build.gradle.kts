@@ -62,7 +62,7 @@ dependencyLocking {
 
 dependencies {
     constraints {
-        ktlint("ch.qos.logback:logback-core:1.6.5")
+        ktlint("ch.qos.logback:logback-core:1.6.6")
         implementation("at.yawk.lz4:lz4-java:1.12.1") {
             because("Fixes CVE-2026-59949 in the kafka-clients transitive dependency")
         }
