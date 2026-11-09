@@ -20,7 +20,7 @@ plugins {
     id("org.springframework.boot") version "3.5.16" apply false
     id("java-library")
     id("maven-publish")
-    id("io.github.ben-manes.versions") version "0.66.0"
+    id("io.github.ben-manes.versions") version "0.67.0"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     kotlin("jvm") version "2.4.10"
     kotlin("plugin.spring") version "2.4.10"
@@ -63,7 +63,7 @@ dependencyLocking {
 dependencies {
     constraints {
         ktlint("ch.qos.logback:logback-core:1.6.6")
-        implementation("at.yawk.lz4:lz4-java:1.12.1") {
+        implementation("at.yawk.lz4:lz4-java:1.13.0") {
             because("Fixes CVE-2026-59949 in the kafka-clients transitive dependency")
         }
         implementation("org.xerial.snappy:snappy-java:1.1.10.12") {
@@ -73,7 +73,7 @@ dependencies {
 
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.4"))
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.26.1"))
-    implementation(platform("io.netty:netty-bom:4.2.19.Final"))
+    implementation(platform("io.netty:netty-bom:4.2.20.Final"))
     api(platform(SpringBootPlugin.BOM_COORDINATES))
 
     api("no.novari:kafka:6.3.1")
