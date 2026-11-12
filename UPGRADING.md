@@ -10,6 +10,7 @@ Direktelenker:
 - [`v4 -> v5`](docs/upgrading/v4-to-v5.md)
 - [`v5 -> v6`](docs/upgrading/v5-to-v6.md)
 - [`v6 -> v7`](docs/upgrading/v6-to-v7.md)
+- [`v7 -> v8`](docs/upgrading/v7-to-v8.md)
 
 Fotnoter (eksakte tagger):
 
@@ -17,6 +18,7 @@ Fotnoter (eksakte tagger):
 - `v4 -> v5`: `v4.0.0 -> v5.0.0`
 - `v5 -> v6`: `v5.0.0 -> v6.0.0`
 - `v6 -> v7`: `v6.0.0 -> v7.0.0`
+- `v7 -> v8`: `v7.4.1 -> v8.0.0`
 
 For nye major-versjoner (v8, v9, ...), bruk malen:
 

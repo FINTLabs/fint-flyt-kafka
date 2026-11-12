@@ -1,5 +1,5 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 buildscript {
     repositories {
@@ -17,13 +17,13 @@ buildscript {
 }
 
 plugins {
-    id("org.springframework.boot") version "3.5.16" apply false
-    id("java-library")
-    id("maven-publish")
-    id("io.github.ben-manes.versions") version "0.67.0"
-    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    kotlin("jvm") version "2.4.10"
-    kotlin("plugin.spring") version "2.4.10"
+    `java-library`
+    `maven-publish`
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.spring)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.binary.compatibility.validator)
+    alias(libs.plugins.ben.manes.versions)
 }
 
 group = "no.novari"
@@ -36,15 +36,18 @@ java {
     withSourcesJar()
 }
 
-// Dependabot resolves with JDK 21; an explicit release keeps JVM 25 as the resolution target so gradle.lockfile gets updated.
+// Build with JDK 25, publish for Java 21, as fint-kafka-starter. binary-compatibility-validator cannot read Java 25 class files.
 tasks.withType<JavaCompile>().configureEach {
-    options.release.set(25)
+    options.release.set(21)
 }
 
 kotlin {
+    // Locked API: fint-flyt-gateway-starter is compiled against one version, and apps may pull in a newer one.
+    explicitApi()
     jvmToolchain(25)
     compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
+        freeCompilerArgs.addAll("-Xjsr305=strict", "-Xjdk-release=21")
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
@@ -56,40 +59,36 @@ repositories {
     mavenLocal()
 }
 
+apiValidation {
+    ignoredProjects += "compat-v7"
+}
+
 dependencyLocking {
     lockAllConfigurations()
 }
 
 dependencies {
     constraints {
-        ktlint("ch.qos.logback:logback-core:1.6.6")
-        implementation("at.yawk.lz4:lz4-java:1.13.0") {
+        ktlint(libs.logback.core)
+        implementation(libs.lz4.java) {
             because("Fixes CVE-2026-59949 in the kafka-clients transitive dependency")
         }
-        implementation("org.xerial.snappy:snappy-java:1.1.10.12") {
+        implementation(libs.snappy.java) {
             because("Fixes CVE-2026-93451, CVE-2026-108106 and CVE-2026-116590 in kafka-clients")
         }
     }
 
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.4"))
-    implementation(platform("org.apache.logging.log4j:log4j-bom:2.26.1"))
-    implementation(platform("io.netty:netty-bom:4.2.20.Final"))
-    api(platform(SpringBootPlugin.BOM_COORDINATES))
+    implementation(platform(libs.netty.bom))
+    api(platform(libs.spring.boot.dependencies))
 
-    api("no.novari:kafka:6.3.1")
-    api("com.fasterxml.jackson.module:jackson-module-kotlin")
+    api(libs.kafka.starter)
+    api("tools.jackson.module:jackson-module-kotlin")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind")
-    implementation("org.springframework.boot:spring-boot-starter-logging")
-    implementation("org.apache.logging.log4j:log4j-api")
-
-    testImplementation(platform("org.junit:junit-bom:6.1.3"))
+    testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
-    testImplementation("org.springframework.kafka:spring-kafka-test")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:6.4.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
@@ -107,7 +106,7 @@ tasks.test {
 }
 
 ktlint {
-    version.set("1.8.0")
+    version.set(libs.versions.ktlint.cli)
 }
 
 tasks.named("check") {

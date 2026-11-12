@@ -1,0 +1,22 @@
+{
+  "case" : "instance-mapped",
+  "topic" : "afk-no.flyt.event.instance-mapped",
+  "key" : null,
+  "headers" : [ {
+    "key" : "flyt.instance-flow-headers",
+    "value" : "{\"sourceApplicationId\":2,\"correlationId\":\"0f6c2a4e-6a1b-4c8e-9a51-3d2f7b8e1c01\",\"sourceApplicationIntegrationId\":\"skoleskyss-soknad\",\"sourceApplicationInstanceId\":\"SKY-2026-004711\",\"fileIds\":[\"a1d5e7f9-2b4c-4d6e-8f0a-1b3c5d7e9f03\",\"b2e6f8a0-3c5d-4e7f-9a1b-2c4d6e8f0a04\"],\"integrationId\":34,\"instanceId\":567,\"configurationId\":89,\"archiveInstanceId\":null}"
+  }, {
+    "key" : "origin.application.id",
+    "value" : "test"
+  }, {
+    "key" : "__TypeId__",
+    "value" : "java.util.LinkedHashMap"
+  }, {
+    "key" : "__ContentTypeId__",
+    "value" : "java.lang.Object"
+  }, {
+    "key" : "__KeyTypeId__",
+    "value" : "java.lang.Object"
+  } ],
+  "value" : "{\"type\":\"NEW\",\"caseId\":null,\"newCase\":{\"tittel\":\"Skoleskyss 2026/2027\",\"offentligTittel\":\"Skoleskyss\",\"saksmappetype\":\"Sak\",\"administrativEnhet\":\"215\"},\"journalpost\":[{\"tittel\":\"Søknad om skoleskyss\",\"journalposttype\":\"I\",\"dokumentbeskrivelse\":[{\"tittel\":\"Vedtak\",\"dokumentstatus\":\"F\",\"dokumentObjekt\":[{\"fileId\":\"a1d5e7f9-2b4c-4d6e-8f0a-1b3c5d7e9f03\",\"format\":\"PDF\",\"variantformat\":\"A\"}]}]}]}"
+}

@@ -1,0 +1,19 @@
+{
+  "case" : "instance-requested-for-retry",
+  "topic" : "afk-no.flyt.event.instance-requested-for-retry",
+  "key" : null,
+  "headers" : [ {
+    "key" : "flyt.actor",
+    "value" : "{\"type\":\"USER\",\"oid\":\"2ee6f95e-44c3-11ed-b878-0242ac120002\"}"
+  }, {
+    "key" : "flyt.instance-flow-headers",
+    "value" : "{\"sourceApplicationId\":2,\"correlationId\":\"5b9e4d2a-1c3f-4e7a-8b6d-9f0a2c4e6b02\",\"sourceApplicationIntegrationId\":\"skoleskyss-soknad\",\"sourceApplicationInstanceId\":\"SKY-2026-004711\",\"fileIds\":[\"a1d5e7f9-2b4c-4d6e-8f0a-1b3c5d7e9f03\",\"b2e6f8a0-3c5d-4e7f-9a1b-2c4d6e8f0a04\"],\"integrationId\":34,\"instanceId\":567,\"configurationId\":null,\"archiveInstanceId\":null}"
+  }, {
+    "key" : "origin.application.id",
+    "value" : "test"
+  }, {
+    "key" : "__TypeId__",
+    "value" : "no.novari.flyt.kafka.wirecompat.InstanceObjectDto"
+  } ],
+  "value" : "{\"id\":567,\"valuePerKey\":{\"tittel\":\"Søknad om skoleskyss\",\"skolenavn\":\"Åsen videregående skole\",\"elevnummer\":\"4711\"},\"objectCollectionPerKey\":{\"vedlegg\":[{\"id\":568,\"valuePerKey\":{\"tittel\":\"Vedtak\"},\"objectCollectionPerKey\":{},\"createdAt\":null},{\"id\":569,\"valuePerKey\":{\"tittel\":\"Kart\"},\"objectCollectionPerKey\":{},\"createdAt\":null}]},\"createdAt\":\"2026-11-12T10:15:30.123Z\"}"
+}

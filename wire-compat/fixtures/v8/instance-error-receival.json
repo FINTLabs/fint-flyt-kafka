@@ -1,0 +1,16 @@
+{
+  "case" : "instance-error-receival",
+  "topic" : "afk-no.flyt.event.error.instance-error",
+  "key" : null,
+  "headers" : [ {
+    "key" : "flyt.instance-flow-headers",
+    "value" : "{\"sourceApplicationId\":2,\"correlationId\":\"0f6c2a4e-6a1b-4c8e-9a51-3d2f7b8e1c01\",\"sourceApplicationIntegrationId\":\"skoleskyss-soknad\",\"sourceApplicationInstanceId\":\"SKY-2026-004711\",\"fileIds\":[],\"integrationId\":null,\"instanceId\":null,\"configurationId\":null,\"archiveInstanceId\":null}"
+  }, {
+    "key" : "origin.application.id",
+    "value" : "test"
+  }, {
+    "key" : "__TypeId__",
+    "value" : "no.novari.flyt.kafka.model.InstanceErrorEvent"
+  } ],
+  "value" : "{\"name\":\"RECEIVAL\",\"errors\":{\"errors\":[{\"errorCode\":\"NO_INTEGRATION_FOUND_ERROR\",\"args\":{\"sourceApplicationId\":\"2\",\"sourceApplicationIntegrationId\":\"skoleskyss-soknad\"}}]}}"
+}
