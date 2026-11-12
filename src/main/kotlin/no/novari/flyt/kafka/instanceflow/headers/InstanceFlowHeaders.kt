@@ -2,7 +2,7 @@ package no.novari.flyt.kafka.instanceflow.headers
 
 import java.util.UUID
 
-data class InstanceFlowHeaders(
+public data class InstanceFlowHeaders(
     val sourceApplicationId: Long,
     val correlationId: UUID,
     val sourceApplicationIntegrationId: String? = null,
@@ -13,7 +13,7 @@ data class InstanceFlowHeaders(
     val configurationId: Long? = null,
     val archiveInstanceId: String? = null,
 ) {
-    fun toBuilder(): Builder =
+    public fun toBuilder(): Builder =
         Builder()
             .sourceApplicationId(sourceApplicationId)
             .correlationId(correlationId)
@@ -25,7 +25,7 @@ data class InstanceFlowHeaders(
             .configurationId(configurationId)
             .archiveInstanceId(archiveInstanceId)
 
-    class Builder internal constructor() {
+    public class Builder internal constructor() {
         private var sourceApplicationId: Long? = null
         private var correlationId: UUID? = null
         private var sourceApplicationIntegrationId: String? = null
@@ -36,25 +36,41 @@ data class InstanceFlowHeaders(
         private var configurationId: Long? = null
         private var archiveInstanceId: String? = null
 
-        fun sourceApplicationId(sourceApplicationId: Long?) = apply { this.sourceApplicationId = sourceApplicationId }
+        public fun sourceApplicationId(sourceApplicationId: Long?): Builder =
+            apply {
+                this.sourceApplicationId =
+                    sourceApplicationId
+            }
 
-        fun correlationId(correlationId: UUID?) = apply { this.correlationId = correlationId }
+        public fun correlationId(correlationId: UUID?): Builder = apply { this.correlationId = correlationId }
 
-        fun sourceApplicationIntegrationId(value: String?) = apply { this.sourceApplicationIntegrationId = value }
+        public fun sourceApplicationIntegrationId(value: String?): Builder =
+            apply {
+                this.sourceApplicationIntegrationId =
+                    value
+            }
 
-        fun sourceApplicationInstanceId(value: String?) = apply { this.sourceApplicationInstanceId = value }
+        public fun sourceApplicationInstanceId(value: String?): Builder =
+            apply {
+                this.sourceApplicationInstanceId =
+                    value
+            }
 
-        fun fileIds(fileIds: List<UUID>?) = apply { this.fileIds = fileIds }
+        public fun fileIds(fileIds: List<UUID>?): Builder = apply { this.fileIds = fileIds }
 
-        fun integrationId(integrationId: Long?) = apply { this.integrationId = integrationId }
+        public fun integrationId(integrationId: Long?): Builder = apply { this.integrationId = integrationId }
 
-        fun instanceId(instanceId: Long?) = apply { this.instanceId = instanceId }
+        public fun instanceId(instanceId: Long?): Builder = apply { this.instanceId = instanceId }
 
-        fun configurationId(configurationId: Long?) = apply { this.configurationId = configurationId }
+        public fun configurationId(configurationId: Long?): Builder = apply { this.configurationId = configurationId }
 
-        fun archiveInstanceId(archiveInstanceId: String?) = apply { this.archiveInstanceId = archiveInstanceId }
+        public fun archiveInstanceId(archiveInstanceId: String?): Builder =
+            apply {
+                this.archiveInstanceId =
+                    archiveInstanceId
+            }
 
-        fun build(): InstanceFlowHeaders =
+        public fun build(): InstanceFlowHeaders =
             InstanceFlowHeaders(
                 sourceApplicationId =
                     sourceApplicationId
@@ -72,8 +88,8 @@ data class InstanceFlowHeaders(
             )
     }
 
-    companion object {
+    public companion object {
         @JvmStatic
-        fun builder(): Builder = Builder()
+        public fun builder(): Builder = Builder()
     }
 }
