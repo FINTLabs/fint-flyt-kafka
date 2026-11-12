@@ -1,6 +1,6 @@
 [versions]
 spring-boot = "4.1.2"
-kafka-starter = "1.0.0-rc-1"
+kafka-starter = "1.0.0-rc-2"
 kotlin = "2.4.10"
 ktlint-gradle = "14.2.0"
 ktlint-cli = "1.8.0"
