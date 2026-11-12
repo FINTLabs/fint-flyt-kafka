@@ -183,12 +183,11 @@ class InstanceFlowProducerConsumerIntegrationTest(
         }
     }
 
-    private fun createInstanceFlowHeaders(): InstanceFlowHeaders =
-        InstanceFlowHeaders
-            .builder()
-            .sourceApplicationId(1L)
-            .sourceApplicationIntegrationId("sourceApplicationIntegrationId")
-            .sourceApplicationInstanceId("sourceApplicationInstanceId")
-            .correlationId(UUID.fromString("2ee6f95e-44c3-11ed-b878-0242ac120002"))
-            .build()
+    private fun createInstanceFlowHeaders() =
+        InstanceFlowHeaders(
+            sourceApplicationId = 1,
+            correlationId = UUID.fromString("2ee6f95e-44c3-11ed-b878-0242ac120002"),
+            sourceApplicationIntegrationId = "sourceApplicationIntegrationId",
+            sourceApplicationInstanceId = "sourceApplicationInstanceId",
+        )
 }

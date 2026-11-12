@@ -7,10 +7,8 @@ public final class no/novari/flyt/kafka/instanceflow/headers/CouldNotWriteInstan
 }
 
 public final class no/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders {
-	public static final field Companion Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Companion;
 	public fun <init> (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;)V
 	public synthetic fun <init> (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public static final fun builder ()Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
 	public final fun component1 ()J
 	public final fun component2 ()Ljava/util/UUID;
 	public final fun component3 ()Ljava/lang/String;
@@ -33,36 +31,13 @@ public final class no/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders
 	public final fun getSourceApplicationInstanceId ()Ljava/lang/String;
 	public final fun getSourceApplicationIntegrationId ()Ljava/lang/String;
 	public fun hashCode ()I
-	public final fun toBuilder ()Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
 	public fun toString ()Ljava/lang/String;
-}
-
-public final class no/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder {
-	public final fun archiveInstanceId (Ljava/lang/String;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
-	public final fun build ()Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders;
-	public final fun configurationId (Ljava/lang/Long;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
-	public final fun correlationId (Ljava/util/UUID;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
-	public final fun fileIds (Ljava/util/List;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
-	public final fun instanceId (Ljava/lang/Long;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
-	public final fun integrationId (Ljava/lang/Long;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
-	public final fun sourceApplicationId (Ljava/lang/Long;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
-	public final fun sourceApplicationInstanceId (Ljava/lang/String;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
-	public final fun sourceApplicationIntegrationId (Ljava/lang/String;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
-}
-
-public final class no/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Companion {
-	public final fun builder ()Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders$Builder;
-}
-
-public final class no/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeadersMapper {
-	public static final field INSTANCE Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeadersMapper;
-	public final fun getInstanceFlowHeaders (Lorg/apache/kafka/common/header/Headers;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders;
-	public final fun toHeader (Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders;)Lorg/apache/kafka/common/header/Header;
-	public final fun toInstanceFlowHeaders (Lorg/apache/kafka/common/header/Header;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders;
 }
 
 public final class no/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeadersMapperKt {
 	public static final field INSTANCE_FLOW_HEADERS_KEY Ljava/lang/String;
+	public static final fun instanceFlowHeaders (Lorg/apache/kafka/common/header/Headers;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders;
+	public static final fun instanceFlowHeadersOrNull (Lorg/apache/kafka/common/header/Headers;)Lno/novari/flyt/kafka/instanceflow/headers/InstanceFlowHeaders;
 }
 
 public final class no/novari/flyt/kafka/instanceflow/headers/NoInstanceFlowHeadersException : java/lang/RuntimeException {
@@ -75,11 +50,9 @@ public final class no/novari/flyt/kafka/instanceflow/producing/InstanceFlowKafka
 }
 
 public final class no/novari/flyt/kafka/model/Error {
-	public static final field Companion Lno/novari/flyt/kafka/model/Error$Companion;
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/String;Ljava/util/Map;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public static final fun builder ()Lno/novari/flyt/kafka/model/Error$Builder;
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/util/Map;
 	public final fun copy (Ljava/lang/String;Ljava/util/Map;)Lno/novari/flyt/kafka/model/Error;
@@ -89,16 +62,6 @@ public final class no/novari/flyt/kafka/model/Error {
 	public final fun getErrorCode ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-}
-
-public final class no/novari/flyt/kafka/model/Error$Builder {
-	public final fun args (Ljava/util/Map;)Lno/novari/flyt/kafka/model/Error$Builder;
-	public final fun build ()Lno/novari/flyt/kafka/model/Error;
-	public final fun errorCode (Ljava/lang/String;)Lno/novari/flyt/kafka/model/Error$Builder;
-}
-
-public final class no/novari/flyt/kafka/model/Error$Companion {
-	public final fun builder ()Lno/novari/flyt/kafka/model/Error$Builder;
 }
 
 public final class no/novari/flyt/kafka/model/ErrorCollection {

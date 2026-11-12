@@ -26,6 +26,6 @@ public fun <V : Any> KafkaTemplate<String, V>.send(
     }
     val headers =
         additionalHeaders.map { (headerKey, headerValue) -> RecordHeader(headerKey, headerValue) } +
-            InstanceFlowHeadersMapper.toHeader(instanceFlowHeaders)
+            InstanceFlowHeadersMapper.write(instanceFlowHeaders)
     return send(ProducerRecord(topic.name, null, key, value, headers))
 }

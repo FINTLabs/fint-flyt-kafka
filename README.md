@@ -4,7 +4,8 @@
 
 Flyt additions to [fint-kafka-starter](https://github.com/FINTLabs/fint-kafka-starter) (`no.novari:kafka-starter`):
 
-- `InstanceFlowHeaders`, sent as JSON in the Kafka header `flyt.instance-flow-headers`
+- `InstanceFlowHeaders`, sent as JSON in the Kafka header `flyt.instance-flow-headers`. Create it with the constructor and
+  change it with `copy(...)`
 - `KafkaTemplate.send(topic, instanceFlowHeaders, value)` that writes the header
 - a converter so a `@KafkaListener` can take the header as a parameter
 - the error event payloads `InstanceErrorEvent`, `ErrorCollection` and `Error`
@@ -59,8 +60,22 @@ class InstanceRegisteredEventListener(
   `CouldNotReadInstanceFlowHeadersException` as the cause. Both are retried by the app's error handler, as before.
 - Topics with only `null` values (`instance-dispatched`, `instance-deleted`): leave out the value parameter, or take it
   with its type and `@Payload(required = false)`. Do not use `Any?`: it gets the `ConsumerRecord` for a tombstone.
-- In an error handler or a container made in code, read the header from the record:
-  `InstanceFlowHeadersMapper.getInstanceFlowHeaders(record.headers())`. The value is the raw JSON `String` there.
+- In an error handler or a container made in code, read the header from the record with
+  `record.headers().instanceFlowHeaders()`, or `instanceFlowHeadersOrNull()` to get `null` when it is missing or cannot
+  be read. The value is the raw JSON `String` there.
+
+```kotlin
+@Bean
+fun kafkaErrorHandler(errorEvents: InstanceErrorEventProducerService): CommonErrorHandler =
+    DefaultErrorHandler(
+        { record, exception ->
+            record.headers().instanceFlowHeadersOrNull()
+                ?.let(errorEvents::publishGeneralSystemErrorEvent)
+                ?: log.warn(exception) { "Missing instance flow headers, skipping" }
+        },
+        FixedBackOff(0, 0),
+    )
+```
 
 ## Wire compatibility tests
 

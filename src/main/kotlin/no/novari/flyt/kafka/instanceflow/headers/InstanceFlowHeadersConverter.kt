@@ -9,5 +9,5 @@ import org.springframework.core.convert.converter.Converter
  */
 internal class InstanceFlowHeadersConverter : Converter<ByteArray, InstanceFlowHeaders> {
     override fun convert(source: ByteArray): InstanceFlowHeaders =
-        InstanceFlowHeadersMapper.toInstanceFlowHeaders(RecordHeader(INSTANCE_FLOW_HEADERS_KEY, source))
+        InstanceFlowHeadersMapper.read(RecordHeader(INSTANCE_FLOW_HEADERS_KEY, source))
 }

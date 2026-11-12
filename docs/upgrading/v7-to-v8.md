@@ -17,23 +17,27 @@ check this.
 
 ## API
 
-| v7                                                                             | v8                                                                                        |
-|--------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| `InstanceFlowTemplateFactory.createTemplate(X::class.java)`                    | inject `KafkaTemplate<String, X>`                                                         |
-| `InstanceFlowTemplate.send(InstanceFlowProducerRecord)`                        | `kafkaTemplate.send(topic, instanceFlowHeaders, value, key, additionalHeaders)`           |
-| `InstanceFlowProducerRecord.additionalHeader(key, bytes)`                      | `additionalHeaders = mapOf(key to bytes)`                                                 |
-| `InstanceFlowListenerFactoryService.createRecordListenerContainerFactory(...)` | `@KafkaListener` with `@Header(INSTANCE_FLOW_HEADERS_KEY) headers: InstanceFlowHeaders`   |
-| `InstanceFlowConsumerRecord<T>`                                                | the value and the header as listener parameters                                           |
-| `consumerRecord.headers()`, `timestamp()`, ...                                 | `@Header(...)`, `@Header(KafkaHeaders.RECEIVED_TIMESTAMP)`, ...                           |
-| `InstanceFlowErrorHandlerFactory`, `InstanceFlowErrorHandlerConfiguration`     | a `CommonErrorHandler` bean, for example `DefaultErrorHandler`                            |
-| `InstanceFlowRecoverer.recover(instanceFlowConsumerRecord, e)`                 | recoverer that calls `InstanceFlowHeadersMapper.getInstanceFlowHeaders(record.headers())` |
-| `recoverForMissingInstanceFlowHeaders(...)`                                    | catch `NoInstanceFlowHeadersException` and `CouldNotReadInstanceFlowHeadersException`     |
-| `retryWithBackoffFunction { instanceFlowConsumerRecord, e -> }`                | `setBackOffFunction { record, e -> }`                                                     |
-| `InstanceFlowHeadersMapper` bean                                               | `InstanceFlowHeadersMapper` object                                                        |
-| `*TopicNameParameters`                                                         | `KafkaTopics.event(...)`, `errorEvent(...)`, `entity(...)` as beans                       |
+| v7                                                                             | v8                                                                                      |
+|--------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| `InstanceFlowTemplateFactory.createTemplate(X::class.java)`                    | inject `KafkaTemplate<String, X>`                                                       |
+| `InstanceFlowTemplate.send(InstanceFlowProducerRecord)`                        | `kafkaTemplate.send(topic, instanceFlowHeaders, value, key, additionalHeaders)`         |
+| `InstanceFlowProducerRecord.additionalHeader(key, bytes)`                      | `additionalHeaders = mapOf(key to bytes)`                                               |
+| `InstanceFlowListenerFactoryService.createRecordListenerContainerFactory(...)` | `@KafkaListener` with `@Header(INSTANCE_FLOW_HEADERS_KEY) headers: InstanceFlowHeaders` |
+| `InstanceFlowConsumerRecord<T>`                                                | the value and the header as listener parameters                                         |
+| `consumerRecord.headers()`, `timestamp()`, ...                                 | `@Header(...)`, `@Header(KafkaHeaders.RECEIVED_TIMESTAMP)`, ...                         |
+| `InstanceFlowErrorHandlerFactory`, `InstanceFlowErrorHandlerConfiguration`     | a `CommonErrorHandler` bean, for example `DefaultErrorHandler`                          |
+| `InstanceFlowRecoverer.recover(instanceFlowConsumerRecord, e)`                 | recoverer that calls `record.headers().instanceFlowHeaders()`                           |
+| `recoverForMissingInstanceFlowHeaders(...)`                                    | `record.headers().instanceFlowHeadersOrNull()` gives `null`                             |
+| `retryWithBackoffFunction { instanceFlowConsumerRecord, e -> }`                | `setBackOffFunction { record, e -> }`                                                   |
+| `InstanceFlowHeadersMapper.getInstanceFlowHeaders(headers)`                    | `headers.instanceFlowHeaders()`                                                         |
+| `InstanceFlowHeaders.builder()...build()`                                      | `InstanceFlowHeaders(sourceApplicationId = ..., correlationId = ...)`                   |
+| `headers.toBuilder().instanceId(id).build()`                                   | `headers.copy(instanceId = id)`                                                         |
+| `Error.builder()...build()`                                                    | `Error(errorCode = ..., args = ...)`                                                    |
+| `*TopicNameParameters`                                                         | `KafkaTopics.event(...)`, `errorEvent(...)`, `entity(...)` as beans                     |
 
-Unchanged: `InstanceFlowHeaders`, the header key `flyt.instance-flow-headers`, `Error`, `ErrorCollection`,
-`InstanceErrorEvent`, `InstanceErrorOrigin` and the exceptions in `instanceflow.headers`.
+Unchanged: the fields of `InstanceFlowHeaders`, `Error`, `ErrorCollection` and `InstanceErrorEvent`, the header key
+`flyt.instance-flow-headers`, `InstanceErrorOrigin`, the exceptions in `instanceflow.headers` and the JSON format. The
+builders are gone: use the constructors, named arguments and `copy(...)`.
 
 ## Example
 
