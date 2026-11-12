@@ -46,6 +46,8 @@ updates:
                 - "version-update:semver-major"
           - dependency-name: "jvm"
           - dependency-name: "plugin.spring"
+          # compat-v7 tests that the version in production reads the wire-compat fixtures (FINT-130).
+          - dependency-name: "no.novari:flyt-kafka"
     - package-ecosystem: github-actions
       directory: "/"
       schedule:
