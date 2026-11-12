@@ -1,0 +1,14 @@
+spring:
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      group-id: wire-compat
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+
+novari:
+  kafka:
+    topic:
+      org-id: afk-no
+      domain-context: flyt
+    default-replicas: 1
+    application-id: wire-compat

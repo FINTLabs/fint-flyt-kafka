@@ -94,8 +94,16 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+// Wire compatibility tests (FINT-130): test cases shared with compat-v7, fixtures in wire-compat/fixtures.
+kotlin.sourceSets.named("test") {
+    kotlin.srcDir("wire-compat/cases")
+}
+
 tasks.test {
     useJUnitPlatform()
+    systemProperty("wireCompat.fixtures", file("wire-compat/fixtures").absolutePath)
+    systemProperty("wireCompat.write", providers.gradleProperty("writeWireCompatFixtures").isPresent)
+    inputs.dir("wire-compat/fixtures")
 }
 
 ktlint {
