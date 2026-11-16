@@ -31,7 +31,7 @@ dependencyLocking {
 
 dependencies {
     constraints {
-        testImplementation("at.yawk.lz4:lz4-java:1.13.0") {
+        testImplementation("at.yawk.lz4:lz4-java:1.14.0") {
             because("Fixes CVE-2026-59949 in the kafka-clients transitive dependency")
         }
         testImplementation("org.xerial.snappy:snappy-java:1.1.10.12") {
@@ -40,7 +40,7 @@ dependencies {
     }
 
     testImplementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.16"))
-    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.22.4"))
+    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.23.0"))
 
     testImplementation("no.novari:flyt-kafka:7.4.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
