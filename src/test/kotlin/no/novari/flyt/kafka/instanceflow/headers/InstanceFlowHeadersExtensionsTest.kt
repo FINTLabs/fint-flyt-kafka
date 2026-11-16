@@ -32,4 +32,20 @@ class InstanceFlowHeadersExtensionsTest {
         assertThrows<CouldNotReadInstanceFlowHeadersException> { headers.instanceFlowHeaders() }
         assertNull(headers.instanceFlowHeadersOrNull())
     }
+
+    @Test
+    fun `header without a value`() {
+        val headers = RecordHeaders().add(INSTANCE_FLOW_HEADERS_KEY, null)
+
+        assertThrows<CouldNotReadInstanceFlowHeadersException> { headers.instanceFlowHeaders() }
+        assertNull(headers.instanceFlowHeadersOrNull())
+    }
+
+    @Test
+    fun `header with the JSON value null`() {
+        val headers = RecordHeaders().add(INSTANCE_FLOW_HEADERS_KEY, "null".toByteArray())
+
+        assertThrows<CouldNotReadInstanceFlowHeadersException> { headers.instanceFlowHeaders() }
+        assertNull(headers.instanceFlowHeadersOrNull())
+    }
 }

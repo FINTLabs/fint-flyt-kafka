@@ -45,10 +45,15 @@ internal object InstanceFlowHeadersMapper {
             throw CouldNotWriteInstanceFlowHeadersException(instanceFlowHeaders)
         }
 
-    fun read(header: Header): InstanceFlowHeaders =
-        try {
-            jsonMapper.readValue(header.value(), InstanceFlowHeaders::class.java)
-        } catch (_: JacksonException) {
-            throw CouldNotReadInstanceFlowHeadersException(header)
-        }
+    // A header without a value, or with the JSON value null, has no headers to read either.
+    fun read(header: Header): InstanceFlowHeaders {
+        val value = header.value() ?: throw CouldNotReadInstanceFlowHeadersException(header)
+        val instanceFlowHeaders: InstanceFlowHeaders? =
+            try {
+                jsonMapper.readValue(value, InstanceFlowHeaders::class.java)
+            } catch (_: JacksonException) {
+                throw CouldNotReadInstanceFlowHeadersException(header)
+            }
+        return instanceFlowHeaders ?: throw CouldNotReadInstanceFlowHeadersException(header)
+    }
 }
