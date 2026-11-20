@@ -249,7 +249,8 @@ object WireCompatCases {
                 consumers =
                     listOf(
                         Consumer(InstanceObjectDto::class.java, Expect.Equal(null)),
-                        Consumer(Any::class.java, Expect.Equal(null)),
+                        // With fint-kafka-starter, an Any? parameter gets the ConsumerRecord for a tombstone.
+                        Consumer(Any::class.java, Expect.Readable),
                     ),
             ),
             WireCompatCase(
@@ -258,7 +259,7 @@ object WireCompatCases {
                 eventName = "instance-deleted",
                 instanceFlowHeaders = dispatched,
                 value = null,
-                consumers = listOf(Consumer(Any::class.java, Expect.Equal(null))),
+                consumers = listOf(Consumer(Any::class.java, Expect.Readable)),
             ),
             WireCompatCase(
                 name = "instance-error-receival",

@@ -1,14 +1,8 @@
 package no.novari.flyt.kafka.wirecompat
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import no.novari.flyt.kafka.instanceflow.producing.InstanceFlowProducerRecord
-import no.novari.flyt.kafka.instanceflow.producing.InstanceFlowTemplateFactory
-import no.novari.kafka.topic.name.ErrorEventTopicNameParameters
-import no.novari.kafka.topic.name.EventTopicNameParameters
-import no.novari.kafka.topic.name.TopicNameParameters
-import no.novari.kafka.topic.name.TopicNamePrefixParameters
+import no.novari.flyt.kafka.instanceflow.producing.send
+import no.novari.kafka.starter.topic.KafkaTopics
+import no.novari.kafka.starter.topic.TopicName
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.RecordMetadata
@@ -21,10 +15,14 @@ import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.TestConstructor
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
 import java.nio.charset.StandardCharsets.UTF_8
@@ -44,7 +42,8 @@ import java.util.concurrent.TimeUnit
 @DirtiesContext
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class ProduceFixturesTest(
-    private val instanceFlowTemplateFactory: InstanceFlowTemplateFactory,
+    private val kafkaTemplate: KafkaTemplate<String, Any>,
+    private val topics: KafkaTopics,
     private val embeddedKafka: EmbeddedKafkaBroker,
 ) {
     @TestFactory
@@ -64,20 +63,14 @@ class ProduceFixturesTest(
         }
 
     private fun produce(case: WireCompatCase): FixtureRecord {
-        val valueClass = case.value?.javaClass ?: Any::class.java
-        val record =
-            InstanceFlowProducerRecord
-                .builder<Any>()
-                .topicNameParameters(topicNameParameters(case))
-                .instanceFlowHeaders(case.instanceFlowHeaders)
-                .value(case.value)
-        case.additionalHeaders.forEach { (key, value) -> record.additionalHeader(key, value.toByteArray(UTF_8)) }
-
         val metadata =
-            instanceFlowTemplateFactory
-                .createTemplate(valueClass)
-                .send(record.build())
-                .get(10, TimeUnit.SECONDS)
+            kafkaTemplate
+                .send(
+                    topicName(case),
+                    case.instanceFlowHeaders,
+                    case.value,
+                    additionalHeaders = case.additionalHeaders.mapValues { it.value.toByteArray(UTF_8) },
+                ).get(10, TimeUnit.SECONDS)
                 .recordMetadata
         assertEquals(case.topic, metadata.topic())
         return read(case, metadata)
@@ -117,31 +110,20 @@ class ProduceFixturesTest(
         throw AssertionError("${case.name}: record at $partition@${metadata.offset()} was not read")
     }
 
-    private fun topicNameParameters(case: WireCompatCase): TopicNameParameters {
-        val prefix =
-            TopicNamePrefixParameters
-                .stepBuilder()
-                .orgId(WireCompatCases.ORG_ID)
-                .domainContext(WireCompatCases.DOMAIN_CONTEXT)
-                .build()
-        return when (case.topicType) {
+    private fun topicName(case: WireCompatCase): TopicName =
+        when (case.topicType) {
             TopicType.EVENT -> {
-                EventTopicNameParameters
-                    .builder()
-                    .topicNamePrefixParameters(prefix)
-                    .eventName(case.eventName)
-                    .build()
+                topics.event(case.eventName, WireCompatCases.ORG_ID, WireCompatCases.DOMAIN_CONTEXT)
             }
 
             TopicType.ERROR_EVENT -> {
-                ErrorEventTopicNameParameters
-                    .builder()
-                    .topicNamePrefixParameters(prefix)
-                    .errorEventName(case.eventName)
-                    .build()
+                topics.errorEvent(
+                    case.eventName,
+                    WireCompatCases.ORG_ID,
+                    WireCompatCases.DOMAIN_CONTEXT,
+                )
             }
         }
-    }
 
     /**
      * The fixture's topic, key and headers must be on the record. JSON is compared as a tree, so field order does not
@@ -177,7 +159,7 @@ class ProduceFixturesTest(
 
     private companion object {
         /** The fixtures this version writes. */
-        const val VERSION = "v7"
+        const val VERSION = "v8"
 
         val JSON_HEADERS = setOf("flyt.instance-flow-headers", WireCompatCases.ACTOR_HEADER)
 
