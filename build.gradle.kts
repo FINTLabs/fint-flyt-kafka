@@ -1,5 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 buildscript {
     repositories {
@@ -48,7 +49,13 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict", "-Xjdk-release=21")
         jvmTarget.set(JvmTarget.JVM_21)
+        // Spring Boot 4.1 manages Kotlin 2.3, so apps may run with a 2.3 stdlib.
+        apiVersion.set(KotlinVersion.KOTLIN_2_3)
     }
+    // The stdlib version Spring Boot manages, not the Kotlin plugin's, so the library does not upgrade it in apps.
+    coreLibrariesVersion =
+        libs.versions.kotlin.stdlib
+            .get()
 }
 
 repositories {
@@ -67,6 +74,13 @@ dependencyLocking {
     lockAllConfigurations()
 }
 
+// The Spring Boot BOM sets versions in this build only. It is not published, so it cannot change the app's Spring Boot
+// or Kotlin version. versionMapping below publishes the resolved versions instead.
+val springBootBom = configurations.dependencyScope("springBootBom")
+listOf("compileClasspath", "runtimeClasspath", "testCompileClasspath", "testRuntimeClasspath").forEach {
+    configurations.named(it) { extendsFrom(springBootBom.get()) }
+}
+
 dependencies {
     constraints {
         ktlint(libs.logback.core)
@@ -78,8 +92,7 @@ dependencies {
         }
     }
 
-    implementation(platform(libs.netty.bom))
-    api(platform(libs.spring.boot.dependencies))
+    springBootBom(platform(libs.spring.boot.dependencies))
 
     api(libs.kafka.starter)
     api("tools.jackson.module:jackson-module-kotlin")
@@ -129,6 +142,12 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            // Publish the versions resolved from the Spring Boot BOM, so consumers do not need the BOM.
+            versionMapping {
+                allVariants {
+                    fromResolutionResult()
+                }
+            }
         }
     }
 }
