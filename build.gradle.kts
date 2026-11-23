@@ -6,12 +6,12 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath(platform("com.fasterxml.jackson:jackson-bom:2.22.4"))
+        classpath(platform("com.fasterxml.jackson:jackson-bom:2.23.0"))
         constraints {
             classpath("org.apache.httpcomponents.client5:httpclient5:5.6.5")
-            classpath("org.apache.httpcomponents.core5:httpcore5:5.4.4")
-            classpath("org.apache.httpcomponents.core5:httpcore5-h2:5.4.4")
-            classpath("org.apache.commons:commons-lang3:3.21.0")
+            classpath("org.apache.httpcomponents.core5:httpcore5:5.5")
+            classpath("org.apache.httpcomponents.core5:httpcore5-h2:5.5")
+            classpath("org.apache.commons:commons-lang3:3.22.0")
         }
     }
 }
@@ -62,8 +62,8 @@ dependencyLocking {
 
 dependencies {
     constraints {
-        ktlint("ch.qos.logback:logback-core:1.6.6")
-        implementation("at.yawk.lz4:lz4-java:1.13.0") {
+        ktlint("ch.qos.logback:logback-core:1.6.8")
+        implementation("at.yawk.lz4:lz4-java:1.14.1") {
             because("Fixes CVE-2026-59949 in the kafka-clients transitive dependency")
         }
         implementation("org.xerial.snappy:snappy-java:1.1.10.12") {
@@ -71,9 +71,9 @@ dependencies {
         }
     }
 
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.4"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.23.0"))
     implementation(platform("org.apache.logging.log4j:log4j-bom:2.26.1"))
-    implementation(platform("io.netty:netty-bom:4.2.20.Final"))
+    implementation(platform("io.netty:netty-bom:4.2.21.Final"))
     api(platform(SpringBootPlugin.BOM_COORDINATES))
 
     api("no.novari:kafka:6.3.1")
