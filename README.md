@@ -19,7 +19,7 @@ its README and [migration guide](https://github.com/FINTLabs/fint-kafka-starter/
 implementation("no.novari:flyt-kafka:<version>")
 ```
 
-Requires Spring Boot 4.1+, Jackson 3 and Java 21+. The library is auto-configured and brings fint-kafka-starter. Upgrading
+Requires Spring Boot 4.2+, Jackson 3 and Java 21+. The library is auto-configured and brings fint-kafka-starter. Upgrading
 from v7: [docs/upgrading/v7-to-v8.md](docs/upgrading/v7-to-v8.md).
 
 Flyt apps set `novari.kafka.topic.domain-context: flyt`, or include the profile `flyt-kafka`, which sets it.
