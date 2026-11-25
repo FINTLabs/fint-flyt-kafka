@@ -2,21 +2,6 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath(platform("com.fasterxml.jackson:jackson-bom:2.22.4"))
-        constraints {
-            classpath("org.apache.httpcomponents.client5:httpclient5:5.6.5")
-            classpath("org.apache.httpcomponents.core5:httpcore5:5.4.4")
-            classpath("org.apache.httpcomponents.core5:httpcore5-h2:5.4.4")
-            classpath("org.apache.commons:commons-lang3:3.21.0")
-        }
-    }
-}
-
 plugins {
     `java-library`
     `maven-publish`
@@ -84,12 +69,6 @@ listOf("compileClasspath", "runtimeClasspath", "testCompileClasspath", "testRunt
 dependencies {
     constraints {
         ktlint(libs.logback.core)
-        implementation(libs.lz4.java) {
-            because("Fixes CVE-2026-59949 in the kafka-clients transitive dependency")
-        }
-        implementation(libs.snappy.java) {
-            because("Fixes CVE-2026-93451, CVE-2026-108106 and CVE-2026-116590 in kafka-clients")
-        }
     }
 
     springBootBom(platform(libs.spring.boot.dependencies))
@@ -98,7 +77,6 @@ dependencies {
     api("tools.jackson.module:jackson-module-kotlin")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
-    testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
