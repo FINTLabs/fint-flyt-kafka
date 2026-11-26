@@ -10,5 +10,5 @@ novari:
     topic:
       org-id: test-org-id
       domain-context: test-domain-context
-    default-replicas: 1
+      default-replicas: 1
     application-id: test

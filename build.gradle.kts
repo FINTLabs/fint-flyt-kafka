@@ -1,29 +1,15 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
-
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath(platform("com.fasterxml.jackson:jackson-bom:2.22.4"))
-        constraints {
-            classpath("org.apache.httpcomponents.client5:httpclient5:5.6.5")
-            classpath("org.apache.httpcomponents.core5:httpcore5:5.4.4")
-            classpath("org.apache.httpcomponents.core5:httpcore5-h2:5.4.4")
-            classpath("org.apache.commons:commons-lang3:3.21.0")
-        }
-    }
-}
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    id("org.springframework.boot") version "3.5.16" apply false
-    id("java-library")
-    id("maven-publish")
-    id("io.github.ben-manes.versions") version "0.67.0"
-    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    kotlin("jvm") version "2.4.10"
-    kotlin("plugin.spring") version "2.4.10"
+    `java-library`
+    `maven-publish`
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.spring)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.binary.compatibility.validator)
+    alias(libs.plugins.ben.manes.versions)
 }
 
 group = "no.novari"
@@ -36,16 +22,25 @@ java {
     withSourcesJar()
 }
 
-// Dependabot resolves with JDK 21; an explicit release keeps JVM 25 as the resolution target so gradle.lockfile gets updated.
+// Build with JDK 25, publish for Java 21, as fint-kafka-starter. binary-compatibility-validator cannot read Java 25 class files.
 tasks.withType<JavaCompile>().configureEach {
-    options.release.set(25)
+    options.release.set(21)
 }
 
 kotlin {
+    // Locked API: fint-flyt-gateway-starter is compiled against one version, and apps may pull in a newer one.
+    explicitApi()
     jvmToolchain(25)
     compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
+        freeCompilerArgs.addAll("-Xjsr305=strict", "-Xjdk-release=21")
+        jvmTarget.set(JvmTarget.JVM_21)
+        // Spring Boot 4.2 manages Kotlin 2.4, so apps may run with a 2.4 stdlib.
+        apiVersion.set(KotlinVersion.KOTLIN_2_4)
     }
+    // The stdlib version Spring Boot manages, not the Kotlin plugin's, so the library does not upgrade it in apps.
+    coreLibrariesVersion =
+        libs.versions.kotlin.stdlib
+            .get()
 }
 
 repositories {
@@ -56,40 +51,35 @@ repositories {
     mavenLocal()
 }
 
+apiValidation {
+    ignoredProjects += "compat-v7"
+}
+
 dependencyLocking {
     lockAllConfigurations()
 }
 
+// The Spring Boot BOM sets versions in this build only. It is not published, so it cannot change the app's Spring Boot
+// or Kotlin version. versionMapping below publishes the resolved versions instead.
+val springBootBom = configurations.dependencyScope("springBootBom")
+listOf("compileClasspath", "runtimeClasspath", "testCompileClasspath", "testRuntimeClasspath").forEach {
+    configurations.named(it) { extendsFrom(springBootBom.get()) }
+}
+
 dependencies {
     constraints {
-        ktlint("ch.qos.logback:logback-core:1.6.8")
-        implementation("at.yawk.lz4:lz4-java:1.13.0") {
-            because("Fixes CVE-2026-59949 in the kafka-clients transitive dependency")
-        }
-        implementation("org.xerial.snappy:snappy-java:1.1.10.12") {
-            because("Fixes CVE-2026-93451, CVE-2026-108106 and CVE-2026-116590 in kafka-clients")
-        }
+        ktlint(libs.logback.core)
     }
 
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.4"))
-    implementation(platform("org.apache.logging.log4j:log4j-bom:2.26.1"))
-    implementation(platform("io.netty:netty-bom:4.2.20.Final"))
-    api(platform(SpringBootPlugin.BOM_COORDINATES))
+    springBootBom(platform(libs.spring.boot.dependencies))
 
-    api("no.novari:kafka:6.3.1")
-    api("com.fasterxml.jackson.module:jackson-module-kotlin")
+    api(libs.kafka.starter)
+    api("tools.jackson.module:jackson-module-kotlin")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind")
-    implementation("org.springframework.boot:spring-boot-starter-logging")
-    implementation("org.apache.logging.log4j:log4j-api")
-
-    testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
-    testImplementation("org.springframework.kafka:spring-kafka-test")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:6.4.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
@@ -107,7 +97,7 @@ tasks.test {
 }
 
 ktlint {
-    version.set("1.8.0")
+    version.set(libs.versions.ktlint.cli)
 }
 
 tasks.named("check") {
@@ -130,6 +120,12 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            // Publish the versions resolved from the Spring Boot BOM, so consumers do not need the BOM.
+            versionMapping {
+                allVariants {
+                    fromResolutionResult()
+                }
+            }
         }
     }
 }
