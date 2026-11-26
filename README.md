@@ -57,7 +57,8 @@ class InstanceRegisteredEventListener(
 ```
 
 - A missing header fails the record with Spring's `MessageHandlingException`, an unreadable header with
-  `CouldNotReadInstanceFlowHeadersException` as the cause. Both are retried by the app's error handler, as before.
+  `CouldNotReadInstanceFlowHeadersException` as the cause. Both go to the app's error handler, as before. With
+  `FixedBackOff(0, 0)` below, the recoverer runs at once, without retries.
 - Topics with only `null` values (`instance-dispatched`, `instance-deleted`): leave out the value parameter, or take it
   with its type and `@Payload(required = false)`. Do not use `Any?`: it gets the `ConsumerRecord` for a tombstone.
 - In an error handler or a container made in code, read the header from the record with
@@ -80,10 +81,11 @@ fun kafkaErrorHandler(errorEvents: InstanceErrorEventProducerService): CommonErr
 ## Wire compatibility tests
 
 While apps move from v7 to v8, both versions must read each other's records. `wire-compat/fixtures/<version>` holds the
-records each version produces, `ProduceFixturesTest` checks this version against its own, `NewReadsFixturesTest` reads
-all fixtures with this version, and the `compat-v7` subproject reads them with fint-flyt-kafka 7.4.1. Fixtures of a
-released version are never rewritten. Write the current version's fixtures with
-`./gradlew test -PwriteWireCompatFixtures`. Delete `wire-compat` and `compat-v7` when no app runs v7.
+records each version produces, `ProduceFixturesTest` checks this version against its own (with exactly the same headers,
+so a new header needs new fixtures that `compat-v7` then reads), `NewReadsFixturesTest` reads all fixtures with this
+version, and the `compat-v7` subproject reads them with fint-flyt-kafka 7.4.1. Fixtures of a released version are never
+rewritten. Write the current version's fixtures with `./gradlew test -PwriteWireCompatFixtures`. Delete `wire-compat`
+and `compat-v7` when no app runs v7.
 
 ## Locked API
 

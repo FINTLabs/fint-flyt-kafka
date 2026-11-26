@@ -126,8 +126,8 @@ class ProduceFixturesTest(
         }
 
     /**
-     * The fixture's topic, key and headers must be on the record. JSON is compared as a tree, so field order does not
-     * matter. Headers the fixture does not have are allowed.
+     * The record must have the fixture's topic, key and exactly its headers. JSON is compared as a tree, so field order
+     * does not matter. A new header fails the test, so the fixture must be rewritten and `compat-v7` reads it too.
      */
     private fun assertSemanticallyEqual(
         expected: FixtureRecord,
@@ -135,6 +135,7 @@ class ProduceFixturesTest(
     ) {
         assertEquals(expected.topic, actual.topic, "topic")
         assertEquals(expected.key, actual.key, "key")
+        assertEquals(expected.headers.map { it.key }.sorted(), actual.headers.map { it.key }.sorted(), "header keys")
         expected.headers.forEach { header ->
             val actualValue = actual.headers.lastOrNull { it.key == header.key }?.value
             assertNotNull(actualValue) { "header ${header.key} is missing" }
