@@ -1,6 +1,6 @@
 [versions]
 spring-boot = "4.2.0"
-kafka-starter = "1.0.0-rc-5"
+kafka-starter = "1.0.0-rc-6"
 kotlin = "2.4.21"
 # The Kotlin version in the Spring Boot BOM. Keep it in step with spring-boot.
 kotlin-stdlib = "2.4.21"
